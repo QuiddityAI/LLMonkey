@@ -1,5 +1,8 @@
+from pydantic import BaseModel
+
 from llmonkey.llmonkey import LLMonkey
 from llmonkey.models import PromptMessage
+from llmonkey.utils.decorators import validate_llm_output
 
 llmonkey = LLMonkey()
 
@@ -55,11 +58,30 @@ response = llmonkey.generate_prompt_response(
 )
 print(response)
 
-print("Using test")
-response = llmonkey.generate_prompt_response(
-    provider="test",
-    model_name="meta-llama/Meta-Llama-3.1-70B-Instruct",
-    user_prompt="Hello! How are you?",
-    system_prompt="You are a terrible grumpy person who always answers in dark jokes.",
-)
-print(response)
+
+class SeaCreature(BaseModel):
+    specie: str
+    description: str
+    depth_of_habitat_meters: float
+    size_in_meters: float
+    number_of_tentacles: int
+
+
+@validate_llm_output(model=SeaCreature, retries=3)
+def get_random_sea_creature() -> SeaCreature:
+    """example of using validate_llm_output decorator
+    The decorator will parse the ChatResponse object (function must return it)
+    according to the Pydantic model provided. The parsed results will be
+    returned as tuple (parsed_model, raw_response)"""
+    response = llmonkey.generate_prompt_response(
+        provider="groq",
+        model_name="llama-3.1-70b-versatile",
+        user_prompt=f"Generate a random sea creature, according to the schema below:\n {SeaCreature.schema()}",
+        system_prompt="You are a data generator. You always output user requested data as JSON.\
+        You never return anything except machine-readable JSON.",
+    )
+    return response
+
+
+for i in range(5):
+    print(get_random_sea_creature()[0].dict())

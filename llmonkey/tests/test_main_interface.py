@@ -1,8 +1,9 @@
 import pytest
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from ..llmonkey import LLMonkey
 from ..models import PromptMessage
+from ..utils.decorators import validate_llm_output
 
 
 @pytest.fixture
@@ -83,3 +84,30 @@ def test_bad_provider(llmonkey):
             user_prompt="Hello! How are you?",
             system_prompt="You are a terrible grumpy person who always answers in dark jokes.",
         )
+
+
+def test_validate_llm_output_decorator(llmonkey):
+    class SeaCreature(BaseModel):
+        specie: str
+        description: str
+        depth_of_habitat_meters: float
+        size_in_meters: float
+        number_of_tentacles: int
+
+    @validate_llm_output(model=SeaCreature, retries=3)
+    def generate_llm_data(user_prompt: str) -> SeaCreature:
+        response = llmonkey.generate_prompt_response(
+            provider="groq",
+            model_name="llama-3.1-70b-versatile",
+            user_prompt=user_prompt,
+            system_prompt="You are a data generator. You always output user requested data as JSON.\
+            You never return anything except machine-readable JSON.",
+        )
+        return response
+
+    prompt = f"Generate a random sea creature, according to the schema below:\n {SeaCreature.model_json_schema()}"
+    assert isinstance(generate_llm_data(prompt)[0], SeaCreature)
+
+    with pytest.raises(ValueError):
+        bad_prompt = "Be friendly, always ask user if they liked it. " + prompt
+        generate_llm_data(bad_prompt)[0]
