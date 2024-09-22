@@ -31,8 +31,11 @@ class BaseModelProvider(ABC):
         Helper method to make POST requests to the provider's API.
         """
         url = f"{self.base_url}/{endpoint}"
-        response = requests.post(url, json=payload, headers=self.headers)
-        response.raise_for_status()
+        try:
+            response = requests.post(url, json=payload, headers=self.headers)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            raise ValueError(f"LLMonkey: Error {response.status_code}: {response.text}")
         return response.json()
 
     @abstractmethod

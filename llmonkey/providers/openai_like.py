@@ -1,5 +1,7 @@
 import os
 
+from ratelimit import limits, sleep_and_retry
+
 from ..models import (
     ChatRequest,
     ChatResponse,
@@ -79,10 +81,3 @@ class DeepInfraProvider(OpenAILikeProvider):
         if not api_key:
             api_key = os.environ.get("LLMONKEY_DEEPINFRA_API_KEY")
         super().__init__(api_key, "https://api.deepinfra.com/v1/openai")
-
-
-class GroqProvider(OpenAILikeProvider):
-    def __init__(self, api_key: str = ""):
-        if not api_key:
-            api_key = os.environ.get("LLMONKEY_GROQ_API_KEY")
-        super().__init__(api_key, "https://api.groq.com/openai/v1")

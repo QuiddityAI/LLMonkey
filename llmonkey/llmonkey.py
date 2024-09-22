@@ -4,7 +4,8 @@ from pydantic import BaseModel, validator
 
 from .models import ChatRequest, ChatResponse, ModelProvider, PromptMessage
 from .providers.base import BaseModelProvider
-from .providers.openai_like import DeepInfraProvider, GroqProvider, OpenAIProvider
+from .providers.groq import GroqProvider
+from .providers.openai_like import DeepInfraProvider, OpenAIProvider
 
 
 class ProviderConfig(BaseModel):
