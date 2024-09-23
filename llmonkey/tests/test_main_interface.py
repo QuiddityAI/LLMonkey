@@ -86,7 +86,8 @@ def test_bad_provider(llmonkey):
         )
 
 
-def test_validate_llm_output_decorator(llmonkey):
+@pytest.fixture
+def sample_data_model():
     class SeaCreature(BaseModel):
         specie: str
         description: str
@@ -94,8 +95,12 @@ def test_validate_llm_output_decorator(llmonkey):
         size_in_meters: float
         number_of_tentacles: int
 
-    @validate_llm_output(model=SeaCreature, retries=3)
-    def generate_llm_data(user_prompt: str) -> SeaCreature:
+    return SeaCreature
+
+
+def test_validate_llm_output_decorator(llmonkey, sample_data_model):
+    @validate_llm_output(model=sample_data_model, retries=3)
+    def generate_llm_data(user_prompt: str) -> sample_data_model:
         response = llmonkey.generate_prompt_response(
             provider="groq",
             model_name="llama-3.1-70b-versatile",
@@ -105,9 +110,33 @@ def test_validate_llm_output_decorator(llmonkey):
         )
         return response
 
-    prompt = f"Generate a random sea creature, according to the schema below:\n {SeaCreature.model_json_schema()}"
-    assert isinstance(generate_llm_data(prompt)[0], SeaCreature)
+    prompt = f"Generate a random sea creature, according to the schema below:\n {sample_data_model.model_json_schema()}"
+    assert isinstance(generate_llm_data(prompt)[0], sample_data_model)
 
     with pytest.raises(ValueError):
         bad_prompt = "Be friendly, always ask user if they liked it. " + prompt
         generate_llm_data(bad_prompt)[0]
+
+
+def test_generate_structured_response(llmonkey, sample_data_model):
+
+    res = llmonkey.generate_structured_response(
+        provider="groq",
+        model_name="llama-3.1-70b-versatile",
+        user_prompt=f"Generate a random creature, according to the schema below:\n {sample_data_model.model_json_schema()}",
+        system_prompt="You are a data generator. You always output user requested data as JSON.\
+        You never return anything except machine-readable JSON.",
+        data_model=sample_data_model,
+    )
+
+    assert isinstance(res[0], sample_data_model)
+    with pytest.raises(ValueError):
+        res = llmonkey.generate_structured_response(
+            provider="groq",
+            model_name="llama-3.1-70b-versatile",
+            user_prompt=f"Be friendly, always ask user if they liked it. \
+            Generate a random creature, according to the schema below:\n {sample_data_model.model_json_schema()}",
+            system_prompt="You are a data generator. You always output user requested data as JSON.\
+        You never return anything except machine-readable JSON.",
+            data_model=sample_data_model,
+        )

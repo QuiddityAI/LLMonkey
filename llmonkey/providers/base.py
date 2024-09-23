@@ -1,7 +1,9 @@
+import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, Tuple, Type
 
 import requests
+from pydantic import BaseModel, ValidationError
 
 from ..models import (
     ChatRequest,
@@ -37,6 +39,37 @@ class BaseModelProvider(ABC):
         except requests.exceptions.HTTPError as e:
             raise ValueError(f"LLMonkey: Error {response.status_code}: {response.text}")
         return response.json()
+
+    def generate_structured_response(
+        self, request: ChatRequest, data_model: Type[BaseModel], retries=3
+    ) -> Tuple[BaseModel, ChatResponse]:
+        """
+        Generate a structured response using a Pydantic model.
+
+        This method will call `generate_prompt_response` and attempt to
+        parse the response as JSON. The parsed data will be validated
+        against the given Pydantic model.
+
+        If validation fails, it will retry the function call up to a
+        certain number of times, specified by the `retries` parameter.
+        Original result of the decorated function will be returned as the
+        second element of the tuple.
+
+        If all retries fail, it will raise a ValueError with a message
+        indicating how many retries were attempted.
+        """
+        for attempt in range(retries):
+            result = self.generate_prompt_response(request)
+            try:
+                # Try to parse string as JSON, assumind last element of conversation is the output of LLM
+                data = json.loads(s := result.conversation[-1].content)
+                return data_model(**data), result  # Validate against Pydantic model
+            except (json.JSONDecodeError, ValidationError) as e:
+                if attempt == retries - 1:
+                    raise ValueError(
+                        f"Validation failed after {retries} attempts: {e}. str: {s}"
+                    )
+        raise ValueError(f"Failed after {retries} retries, last str: {s}")
 
     @abstractmethod
     def generate_prompt_response(self, request: ChatRequest) -> ChatResponse:

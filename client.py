@@ -85,3 +85,14 @@ def get_random_sea_creature() -> SeaCreature:
 
 for i in range(5):
     print(get_random_sea_creature()[0].dict())
+
+res = llmonkey.generate_structured_response(
+    provider="groq",
+    model_name="llama-3.1-70b-versatile",
+    user_prompt=f"Generate a random Lovecraftian creature, according to the schema below:\n {SeaCreature.schema()}",
+    system_prompt="You are a data generator. You always output user requested data as JSON.\
+        You never return anything except machine-readable JSON.",
+    data_model=SeaCreature,
+)
+
+print(res[0])
