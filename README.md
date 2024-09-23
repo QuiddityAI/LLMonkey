@@ -30,5 +30,6 @@ See llmonkey.providers for the list of currently supported providers. Pass `api_
 LLMONKEY_OPENAI_API_KEY=
 LLMONKEY_GROQ_API_KEY=
 LLMONKEY_DEEPINFRA_API_KEY=
+LLMONKEY_COHERE_API_KEY=
 ```
 Simply put .env in the project root, LLMonkey will load env vars automatically.

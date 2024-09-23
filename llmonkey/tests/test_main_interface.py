@@ -19,7 +19,7 @@ def test_openai_response(llmonkey):
         system_prompt="You are a terrible grumpy person who always answers in dark jokes.",
     )
 
-    assert response.model_used == "openai"
+    assert response.provider_used == "openai"
     assert len(response.conversation) > 0
     assert response.token_usage
 
@@ -33,7 +33,7 @@ def test_groq_response(llmonkey):
         max_tokens=1000,
     )
 
-    assert response.model_used == "groq"
+    assert response.provider_used == "groq"
     assert len(response.conversation) > 0
     assert response.token_usage
 
@@ -58,7 +58,7 @@ def test_groq_chat(llmonkey):
         max_tokens=1000,
     )
 
-    assert response.model_used == "groq"
+    assert response.provider_used == "groq"
     assert len(response.conversation) > 0
     assert response.token_usage
 
@@ -71,7 +71,7 @@ def test_deepinfra_response(llmonkey):
         system_prompt="You are a terrible grumpy person who always answers in dark jokes.",
     )
 
-    assert response.model_used == "deepinfra"
+    assert response.provider_used == "deepinfra"
     assert len(response.conversation) > 0
     assert response.token_usage
 
@@ -140,3 +140,22 @@ def test_generate_structured_response(llmonkey, sample_data_model):
         You never return anything except machine-readable JSON.",
             data_model=sample_data_model,
         )
+
+
+def test_rerank(llmonkey):
+    docs = [
+        "Carson City is the capital city of the American state of Nevada.",
+        "The Commonwealth of the Northern Mariana Islands is a group of islands in the Pacific Ocean. Its capital is Saipan.",
+        "Capitalization or capitalisation in English grammar is the use of a capital letter at the start of a word. English usage varies from capitalization in other languages.",
+        "Washington, D.C. (also known as simply Washington or D.C., and officially as the District of Columbia) is the capital of the United States. It is a federal district.",
+        "Capital punishment (the death penalty) has existed in the United States since beforethe United States was a country. As of 2017, capital punishment is legal in 30 of the 50 states.",
+    ]
+    response = llmonkey.rerank(
+        provider="cohere",
+        model_name="rerank-english-v3.0",
+        query="What is the capital of the United States?",
+        documents=docs,
+        top_n=None,
+    )
+
+    assert response.reranked_documents[0].index == 3

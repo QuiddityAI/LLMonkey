@@ -11,6 +11,8 @@ from ..models import (
     EmbeddingRequest,
     EmbeddingResponse,
     PromptMessage,
+    RerankRequest,
+    RerankResponse,
 )
 
 
@@ -91,6 +93,13 @@ class BaseModelProvider(ABC):
     def get_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
         """
         Abstract method to get text embeddings.
+        Derived classes must implement this.
+        """
+        pass
+
+    def rerank(self, request: RerankRequest) -> RerankResponse:
+        """
+        Abstract method to rerank documents.
         Derived classes must implement this.
         """
         pass

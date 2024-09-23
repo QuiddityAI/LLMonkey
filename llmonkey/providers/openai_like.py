@@ -51,7 +51,8 @@ class OpenAILikeProvider(BaseModelProvider):
         )
         return ChatResponse(
             conversation=conversation,
-            model_used=request.model_provider,
+            provider_used=request.model_provider,
+            model_used=request.model_name,
             token_usage=token_usage,
         )
 

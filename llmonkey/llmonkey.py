@@ -1,9 +1,17 @@
-from typing import Any, List, Type
+from typing import Any, Dict, List, Type
 
 from pydantic import BaseModel, field_validator
 
-from .models import ChatRequest, ChatResponse, ModelProvider, PromptMessage
+from .models import (
+    ChatRequest,
+    ChatResponse,
+    ModelProvider,
+    PromptMessage,
+    RerankRequest,
+    RerankResponse,
+)
 from .providers.base import BaseModelProvider
+from .providers.cohere import CohereProvider
 from .providers.groq import GroqProvider
 from .providers.openai_like import DeepInfraProvider, OpenAIProvider
 
@@ -26,6 +34,9 @@ providers = {
     "groq": ProviderConfig(provider=ModelProvider.groq, implementation=GroqProvider),
     "deepinfra": ProviderConfig(
         provider=ModelProvider.deepinfra, implementation=DeepInfraProvider
+    ),
+    "cohere": ProviderConfig(
+        provider=ModelProvider.cohere, implementation=CohereProvider
     ),
 }
 
@@ -158,4 +169,41 @@ class LLMonkey(object):
             providers[provider]
             .implementation(api_key=api_key)
             .generate_chat_response(chat_request)
+        )
+
+    def rerank(
+        self,
+        provider: str,
+        model_name: str,
+        query: str = "",
+        documents: List[str] | Dict[str, str] = [],
+        top_n: int = 3,
+        rank_fields: List[str] = [],
+        api_key: str = "",
+    ) -> RerankResponse:
+        """
+        Rerank a list of documents using a given model.
+
+        Args:
+        provider: The name of the LLM provider to use.
+        model_name: The name of the model to use.
+        query: The query to use for the reranking. Defaults to an empty string.
+        documents: A list of documents to rerank. Defaults to an empty list.
+        top_n: The number of most relevant documents to return. Defaults to 3.
+        rank_fields: The fields to rank documents on. Defaults to an empty list.
+        api_key: The API key for the provider. Defaults to None.
+
+        Returns:
+        A RerankResponse with the reranked documents and the model used.
+        """
+        rerank_request = RerankRequest(
+            model_provider=provider,
+            model_name=model_name,
+            query=query,
+            documents=documents,
+            top_n=top_n,
+            rank_fields=rank_fields,
+        )
+        return (
+            providers[provider].implementation(api_key=api_key).rerank(rerank_request)
         )
