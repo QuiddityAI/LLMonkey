@@ -33,7 +33,7 @@ class TokenUsage(BaseModel):
     )
 
 
-class LLMonekeyResponse(BaseModel):
+class LLMonkeyResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
     provider_used: ModelProvider = Field(
         ..., description="Provider used to generate this response"
@@ -60,13 +60,13 @@ class EmbeddingRequest(LLMonkeyRequest):
     text: str = Field(..., description="Text to generate embeddings from")
 
 
-class ChatResponse(LLMonekeyResponse):
+class ChatResponse(LLMonkeyResponse):
     conversation: List[PromptMessage] = Field(
         ..., description="A list of previous PromptMessages"
     )
 
 
-class EmbeddingResponse(LLMonekeyResponse):
+class EmbeddingResponse(LLMonkeyResponse):
     embedding: List[float] = Field(..., description="Text embeddings")
 
 
@@ -91,7 +91,7 @@ class RerankRequest(LLMonkeyRequest):
     )
 
 
-class RerankResponse(LLMonekeyResponse):
+class RerankResponse(LLMonkeyResponse):
     reranked_documents: List[RerankItem] = Field(
         ..., description="List of reranked documents"
     )
