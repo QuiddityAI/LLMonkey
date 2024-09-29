@@ -1,7 +1,5 @@
 import os
 
-from ratelimit import limits, sleep_and_retry
-
 from ..models import (
     ChatRequest,
     ChatResponse,

@@ -20,24 +20,6 @@ class PromptMessage(BaseModel):
     content: str = Field(..., description="Message content")
 
 
-class ChatRequest(BaseModel):
-    model_config = ConfigDict(protected_namespaces=())
-    model_provider: ModelProvider = Field(..., description="Model provider to use")
-    model_name: str = Field(..., description="Model to use")
-    conversation: List[PromptMessage] = Field(..., description="A list of previous")
-    temperature: Optional[float] = Field(
-        1.0, ge=0.0, le=2.0, description="Temperature of the model"
-    )
-    max_tokens: Optional[int] = Field(..., description="Maximum tokens to generate")
-
-
-class EmbeddingRequest(BaseModel):
-    model_config = ConfigDict(protected_namespaces=())
-    model_provider: ModelProvider = (Field(..., description="Model provider to use"),)
-    model_name: str = Field(..., description="Model to use")
-    text: str = Field(..., description="Text to generate embeddings from")
-
-
 class TokenUsage(BaseModel):
     prompt_tokens: Optional[int] = Field(
         None, description="Number of tokens used in the prompt"
@@ -51,11 +33,8 @@ class TokenUsage(BaseModel):
     )
 
 
-class ChatResponse(BaseModel):
+class LLMonekeyResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
-    conversation: List[PromptMessage] = Field(
-        ..., description="A list of previous PromptMessages"
-    )
     provider_used: ModelProvider = Field(
         ..., description="Provider used to generate this response"
     )
@@ -63,19 +42,40 @@ class ChatResponse(BaseModel):
     token_usage: TokenUsage = Field(..., description="Token usage details")
 
 
-class EmbeddingResponse(BaseModel):
-    model_config = ConfigDict(protected_namespaces=())
-    embedding: List[float] = Field(..., description="Text embeddings")
-    provider_used: ModelProvider = Field(
-        ..., description="Provider used to generate this response"
-    )
-    model_used: str = Field(..., description="Model used to generate this response")
-
-
-class RerankRequest(BaseModel):
+class LLMonkeyRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
     model_provider: ModelProvider = (Field(..., description="Model provider to use"),)
     model_name: str = Field(..., description="Model to use")
+
+
+class ChatRequest(LLMonkeyRequest):
+    conversation: List[PromptMessage] = Field(..., description="A list of previous")
+    temperature: Optional[float] = Field(
+        1.0, ge=0.0, le=2.0, description="Temperature of the model"
+    )
+    max_tokens: Optional[int] = Field(..., description="Maximum tokens to generate")
+
+
+class EmbeddingRequest(LLMonkeyRequest):
+    text: str = Field(..., description="Text to generate embeddings from")
+
+
+class ChatResponse(LLMonekeyResponse):
+    conversation: List[PromptMessage] = Field(
+        ..., description="A list of previous PromptMessages"
+    )
+
+
+class EmbeddingResponse(LLMonekeyResponse):
+    embedding: List[float] = Field(..., description="Text embeddings")
+
+
+class RerankItem(BaseModel):
+    index: int = Field(..., description="The index of the reranked document")
+    score: float = Field(..., description="The score of the reranked document")
+
+
+class RerankRequest(LLMonkeyRequest):
     query: str = Field(..., description="The search query")
     documents: List[str] | Dict[str, str] = Field(
         ..., description="List of documents to rerank"
@@ -91,20 +91,7 @@ class RerankRequest(BaseModel):
     )
 
 
-class RerankItem(BaseModel):
-    index: int = Field(..., description="The index of the reranked document")
-    score: float = Field(..., description="The score of the reranked document")
-
-
-class RerankResponse(BaseModel):
-    model_config = ConfigDict(protected_namespaces=())
+class RerankResponse(LLMonekeyResponse):
     reranked_documents: List[RerankItem] = Field(
         ..., description="List of reranked documents"
-    )
-    provider_used: ModelProvider = Field(
-        ..., description="Provider used to generate this response"
-    )
-    model_used: str = Field(..., description="Model used to generate this response")
-    token_usage: TokenUsage = Field(
-        ..., description="Token usage details, e.g. search_units for cohere"
     )
