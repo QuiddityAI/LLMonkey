@@ -80,3 +80,17 @@ class DeepInfraProvider(OpenAILikeProvider):
         if not api_key:
             api_key = os.environ.get("LLMONKEY_DEEPINFRA_API_KEY")
         super().__init__(api_key, "https://api.deepinfra.com/v1/openai")
+
+
+class IonosProvider(OpenAILikeProvider):
+    def __init__(self, api_key: str = ""):
+        if not api_key:
+            api_key = os.environ.get("LLMONKEY_IONOS_API_KEY")
+        super().__init__(api_key, "https://openai.inference.de-txl.ionos.com/v1")
+
+
+class MistralProvider(OpenAILikeProvider):
+    def __init__(self, api_key: str = ""):
+        if not api_key:
+            api_key = os.environ.get("LLMONKEY_MISTRAL_API_KEY")
+        super().__init__(api_key, "https://api.mistral.ai/v1")
