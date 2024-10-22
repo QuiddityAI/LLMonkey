@@ -9,6 +9,8 @@ class ModelProvider(str, Enum):
     groq = "groq"
     deepinfra = "deepinfra"
     cohere = "cohere"
+    ionos = "ionos"
+    mistral = "mistral"
     # for the future:
     # self_hosted = "self_hosted"
 

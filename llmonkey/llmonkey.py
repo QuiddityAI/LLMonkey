@@ -13,7 +13,7 @@ from .models import (
 from .providers.base import BaseModelProvider
 from .providers.cohere import CohereProvider
 from .providers.groq import GroqProvider
-from .providers.openai_like import DeepInfraProvider, OpenAIProvider
+from .providers.openai_like import DeepInfraProvider, OpenAIProvider, IonosProvider, MistralProvider
 
 
 class ProviderConfig(BaseModel):
@@ -37,6 +37,12 @@ providers = {
     ),
     "cohere": ProviderConfig(
         provider=ModelProvider.cohere, implementation=CohereProvider
+    ),
+    "ionos": ProviderConfig(
+        provider=ModelProvider.ionos, implementation=IonosProvider
+    ),
+    "mistral": ProviderConfig(
+        provider=ModelProvider.mistral, implementation=MistralProvider
     ),
 }
 
