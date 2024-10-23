@@ -27,7 +27,7 @@ class CohereProvider(BaseModelProvider):
     def generate_chat_response(self, request: ChatRequest) -> ChatResponse:
         raise NotImplementedError
 
-    def get_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
+    def generate_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
         raise NotImplementedError
 
     def rerank(self, request: RerankRequest) -> RerankResponse:

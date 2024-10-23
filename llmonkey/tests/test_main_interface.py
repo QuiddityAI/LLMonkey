@@ -159,3 +159,28 @@ def test_rerank(llmonkey):
     )
 
     assert response.reranked_documents[0].index == 3
+
+
+def test_mistral_chat(llmonkey):
+    response = llmonkey.generate_chat_response(
+        provider="mistral",
+        model_name="ministral-8b-latest",
+        conversation=[
+            PromptMessage(
+                role="system",
+                content="You are a terrible grumpy person who always answers in dark jokes.",
+            ),
+            PromptMessage(role="user", content="Hello! How are you? "),
+            PromptMessage(
+                role="assistant", content="I am freaking good, waiting to serve you."
+            ),
+            PromptMessage(
+                role="user", content="That's nice, what would you like to talk about?"
+            ),
+        ],
+        max_tokens=1000,
+    )
+
+    assert response.provider_used == "mistral"
+    assert len(response.conversation) > 0
+    assert response.token_usage

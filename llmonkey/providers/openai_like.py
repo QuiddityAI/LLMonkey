@@ -1,3 +1,4 @@
+import base64
 import os
 
 from ..models import (
@@ -26,14 +27,35 @@ class OpenAILikeProvider(BaseModelProvider):
         Handle multi-turn chat responses using OpenAI's chat API.
         """
         endpoint = "chat/completions"
+
+        messages = []
+        for msg in request.conversation:
+            if msg.role == "system":
+                json_message = {"role": "system", "content": msg.content}
+                messages.append(json_message)
+                continue
+            # different types of content is only supported for user
+            json_message = {
+                "role": msg.role,
+                "content": [{"type": "text", "text": msg.content}],
+            }
+
+            if msg.image:
+                image_url = self._prepare_image(msg)
+                if image_url:
+                    json_message["content"].append(
+                        {"type": "image_url", "image_url": image_url}
+                    )
+
+            messages.append(json_message)
+
         payload = {
             "model": request.model_name,
-            "messages": [
-                {"role": msg.role, "content": msg.content}
-                for msg in request.conversation
-            ],
+            "messages": messages,
             "temperature": request.temperature,
             "max_tokens": request.max_tokens,
+            "stream": False,
+            "stop": None,
         }
 
         # Send the request to OpenAI API
@@ -54,7 +76,22 @@ class OpenAILikeProvider(BaseModelProvider):
             token_usage=token_usage,
         )
 
-    def get_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
+    def _prepare_image(self, msg: PromptMessage):
+        if not msg.image:
+            return None
+        image = msg.image
+        if isinstance(image, str):
+            image_url = {"url": image}
+        elif isinstance(image, bytes):
+            image_url = {
+                "url": "data:image/jpeg;base64,"
+                + base64.b64encode(image).decode("utf-8")
+            }
+        else:
+            raise ValueError(f"Image must be a URL or bytes, provided {type(image)}")
+        return image_url
+
+    def generate_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
         """
         Get text embeddings using OpenAI's embedding API.
         """

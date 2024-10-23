@@ -20,6 +20,9 @@ class PromptMessage(BaseModel):
         ..., description="Role of the prompt, either 'system', 'user', or 'assistant'"
     )
     content: str = Field(..., description="Message content")
+    image: Optional[Union[str, bytes]] = Field(
+        None, description="Image URL or raw bytes"
+    )
 
 
 class TokenUsage(BaseModel):
@@ -33,6 +36,7 @@ class TokenUsage(BaseModel):
     search_units: Optional[int] = Field(
         None, description="Number of search units used e.g. in cohere reranking"
     )
+    total_cost: Optional[float] = Field(None, description="Total price of the request")
 
 
 class LLMonkeyResponse(BaseModel):
@@ -97,3 +101,22 @@ class RerankResponse(LLMonkeyResponse):
     reranked_documents: List[RerankItem] = Field(
         ..., description="List of reranked documents"
     )
+
+
+class ModelCapabilities(str, Enum):
+    chat = "chat"
+    embeddings = "embeddings"
+    rerank = "rerank"
+    vision = "vision"
+
+
+class ModelConfig(BaseModel):
+    identifier: str = Field(..., description="Identifier of the model")
+    verbose_name: str = Field(..., description="Verbose name of the model")
+    description: str = Field(..., description="Description of the model")
+    max_input_tokens: int = Field(..., description="Maximum number of tokens in input")
+    euro_per_1M_input_tokens: float = Field(..., description="Cost per 1M input tokens")
+    euro_per_1M_output_tokens: float = Field(
+        ..., description="Cost per 1M output tokens"
+    )
+    capabilities: List[ModelCapabilities] = Field(..., description="Model capabilities")

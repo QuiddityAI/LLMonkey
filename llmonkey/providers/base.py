@@ -90,7 +90,7 @@ class BaseModelProvider(ABC):
         pass
 
     @abstractmethod
-    def get_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
+    def generate_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
         """
         Abstract method to get text embeddings.
         Derived classes must implement this.
