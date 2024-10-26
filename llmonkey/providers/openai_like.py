@@ -55,7 +55,6 @@ class OpenAILikeProvider(BaseModelProvider):
             "temperature": request.temperature,
             "max_tokens": request.max_tokens,
             "stream": False,
-            "stop": None,
         }
 
         # Send the request to OpenAI API
