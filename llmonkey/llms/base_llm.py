@@ -162,8 +162,6 @@ class BaseLLMModel(metaclass=ABCMeta):
 
     def generate_chat_response(
         self,
-        provider: str,
-        model_name: str,
         conversation: List[PromptMessage] = [],
         temperature=0.7,
         max_tokens=None,
