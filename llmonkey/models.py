@@ -11,6 +11,7 @@ class ModelProvider(str, Enum):
     cohere = "cohere"
     ionos = "ionos"
     mistral = "mistral"
+    nebius = "nebius"
     # for the future:
     # self_hosted = "self_hosted"
 

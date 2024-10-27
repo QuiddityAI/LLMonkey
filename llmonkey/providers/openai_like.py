@@ -130,3 +130,10 @@ class MistralProvider(OpenAILikeProvider):
         if not api_key:
             api_key = os.environ.get("LLMONKEY_MISTRAL_API_KEY")
         super().__init__(api_key, "https://api.mistral.ai/v1")
+
+
+class NebiusProvider(OpenAILikeProvider):
+    def __init__(self, api_key: str = ""):
+        if not api_key:
+            api_key = os.environ.get("LLMONKEY_NEBIUS_API_KEY")
+        super().__init__(api_key, "https://api.studio.nebius.ai/v1")

@@ -1,5 +1,6 @@
 import json
 from abc import ABC, abstractmethod
+from json import JSONDecoder
 from typing import Any, Dict, Tuple, Type
 
 import requests
@@ -14,6 +15,26 @@ from ..models import (
     RerankRequest,
     RerankResponse,
 )
+
+
+def extract_json_objects(text, decoder=JSONDecoder()):
+    """Find JSON objects in text, and yield the decoded JSON data
+
+    Does not attempt to look for JSON arrays, text, or other JSON types outside
+    of a parent JSON object.
+
+    """
+    pos = 0
+    while True:
+        match = text.find("{", pos)
+        if match == -1:
+            break
+        try:
+            result, index = decoder.raw_decode(text[match:])
+            yield result
+            pos = match + index
+        except ValueError:
+            pos = match + 1
 
 
 class BaseModelProvider(ABC):
@@ -64,7 +85,9 @@ class BaseModelProvider(ABC):
             result = self.generate_prompt_response(request)
             try:
                 # Try to parse string as JSON, assumind last element of conversation is the output of LLM
-                data = json.loads(s := result.conversation[-1].content)
+                s = result.conversation[-1].content
+                # try to be forgiving and extract anything that looks like a JSON object
+                data = [r for r in extract_json_objects(s)][0]
                 return data_model(**data), result  # Validate against Pydantic model
             except (json.JSONDecodeError, ValidationError) as e:
                 if attempt == retries - 1:

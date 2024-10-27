@@ -10,6 +10,7 @@ from .openai_like import (
     DeepInfraProvider,
     IonosProvider,
     MistralProvider,
+    NebiusProvider,
     OpenAIProvider,
 )
 
@@ -39,5 +40,8 @@ providers = {
     "ionos": ProviderConfig(provider=ModelProvider.ionos, implementation=IonosProvider),
     "mistral": ProviderConfig(
         provider=ModelProvider.mistral, implementation=MistralProvider
+    ),
+    "nebius": ProviderConfig(
+        provider=ModelProvider.nebius, implementation=NebiusProvider
     ),
 }

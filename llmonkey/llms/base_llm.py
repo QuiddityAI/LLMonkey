@@ -1,3 +1,4 @@
+import re
 from abc import ABCMeta, abstractmethod
 from typing import Dict, List, Type
 
@@ -18,11 +19,19 @@ from ..providers import providers
 from ..providers.base import BaseModelProvider
 
 
+def count_tokens_rough(text):
+    # Split the text based on whitespace and common code symbols
+    tokens = re.split(r"\s+|[()\[\]{}.,:;+=*/\\\"\'<>-]", text)
+    # Filter out any empty strings resulting from the split
+    tokens = [token for token in tokens if token]
+    return len(tokens)
+
+
 class BaseLLMModel(metaclass=ABCMeta):
     def __init__(self, api_key: str = ""):
-        self.provider_instance = providers[self.provider].implementation(
-            api_key=api_key
-        )
+        self.provider_instance: BaseModelProvider = providers[
+            self.provider
+        ].implementation(api_key=api_key)
 
     @property
     @abstractmethod
@@ -75,11 +84,11 @@ class BaseLLMModel(metaclass=ABCMeta):
             temperature=temperature,
             max_tokens=max_tokens,
         )
-        resp = self.provider_instance.generate_structured_response(
+        data_instance, resp = self.provider_instance.generate_structured_response(
             chat_request, data_model=data_model
         )
         resp.token_usage.total_cost = self._calculate_cost(resp.token_usage)
-        return resp
+        return data_instance, resp
 
     def _calculate_cost(self, token_usage: TokenUsage) -> float:
         """
@@ -111,8 +120,8 @@ class BaseLLMModel(metaclass=ABCMeta):
         return None
 
     def _validate_input(self, conversation: List[PromptMessage]) -> None:
-        total_len = sum([len(msg.content) for msg in conversation])
-        if total_len * 4 / 3 > self.config.max_input_tokens:
+        total_tokens = sum([count_tokens_rough(msg.content) for msg in conversation])
+        if total_tokens > self.config.max_input_tokens:
             raise ValueError(
                 f"Input tokens exceed the maximum limit of {self.config.max_input_tokens}."
             )
@@ -244,7 +253,8 @@ class BaseLLMModel(metaclass=ABCMeta):
         """
         provider = self.provider
         model_name = self.config.identifier
-        if len(text) * 4 / 3 > self.config.max_input_tokens:
+        tokens = count_tokens_rough(text)
+        if tokens > self.config.max_input_tokens:
             raise ValueError(
                 f"Input tokens exceed the maximum limit of {self.config.max_input_tokens}."
             )
