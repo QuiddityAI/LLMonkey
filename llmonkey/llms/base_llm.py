@@ -33,6 +33,40 @@ class BaseLLMModel(metaclass=ABCMeta):
             self.provider
         ].implementation(api_key=api_key)
 
+    @classmethod
+    def _get_subclasses(cls):
+        return cls.__subclasses__()
+
+    @classmethod
+    def _build_models_dict(cls):
+        return {model.__name__: model for model in cls._get_subclasses()}
+
+    @classmethod
+    def available_models(cls) -> Dict[str, ModelConfig]:
+        """
+        Get a dictionary of available models.
+
+        Returns:
+        A dictionary of model identifiers to their configurations.
+        """
+        if getattr(cls, "_models", None) is None:
+            cls._models = cls._build_models_dict()
+        return cls._models
+
+    @classmethod
+    def load(self, model_class_name: str, **kwargs) -> "BaseLLMModel":
+        """
+        Load a model by its class name. Use `available_models` to get the list of available models.
+
+        Args:
+        model_class_name: The identifier of the model to load.
+        """
+        if getattr(self, "_models", None) is None:
+            self._models = self._build_models_dict()
+        if model_class_name not in self._models:
+            raise ValueError(f"Model {model_class_name} not found.")
+        return self._models[model_class_name](**kwargs)
+
     @property
     @abstractmethod
     def config(self) -> ModelConfig:
