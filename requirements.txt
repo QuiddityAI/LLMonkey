@@ -3,4 +3,4 @@ python_dotenv >= 1.0.0
 ratelimit >= 2.2.0
 requests >= 2.32.0
 
-cohere >= 5.9.0
+# cohere >= 5.9.0

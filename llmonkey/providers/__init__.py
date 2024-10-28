@@ -4,7 +4,8 @@ from pydantic import BaseModel, field_validator
 
 from ..models import ModelProvider
 from .base import BaseModelProvider
-from .cohere import CohereProvider
+
+# from .cohere import CohereProvider
 from .groq import GroqProvider
 from .openai_like import (
     DeepInfraProvider,
@@ -34,9 +35,9 @@ providers = {
     "deepinfra": ProviderConfig(
         provider=ModelProvider.deepinfra, implementation=DeepInfraProvider
     ),
-    "cohere": ProviderConfig(
-        provider=ModelProvider.cohere, implementation=CohereProvider
-    ),
+    # "cohere": ProviderConfig(
+    #     provider=ModelProvider.cohere, implementation=CohereProvider
+    # ),
     "ionos": ProviderConfig(provider=ModelProvider.ionos, implementation=IonosProvider),
     "mistral": ProviderConfig(
         provider=ModelProvider.mistral, implementation=MistralProvider
