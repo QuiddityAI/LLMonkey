@@ -48,6 +48,22 @@ ChatResponse(provider_used=<ModelProvider.groq: 'groq'>, model_used='llama-3.2-3
 
 ```
 
+### Getting the list of available models
+
+```python
+from llmonkey.llms import BaseModel
+
+print(BaseModel.available_models())
+```
+which will return dict of `<model class name>: <model class>`
+
+Use
+```python
+from llmonkey.llms import BaseModel
+model = BaseModel.load("OpenAI_GPT4o_Mini")
+```
+to load a model by name.
+
 ### Vision capabilities
 
 Models now support vision tasks, e.g.:
