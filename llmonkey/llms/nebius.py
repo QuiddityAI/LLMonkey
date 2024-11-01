@@ -1,4 +1,4 @@
-from ..models import ModelCapabilities, ModelConfig, ModelProvider
+from ..models import ModelCapabilities, ModelConfig, ModelLocation, ModelProvider
 from .base_llm import BaseLLMModel
 
 
@@ -11,6 +11,8 @@ class Nebius_Llama_3_1_70B_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.25,
         euro_per_1M_output_tokens=0.75,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="70B",
     )
     provider = ModelProvider.nebius
 
@@ -24,6 +26,8 @@ class Nebius_Llama_3_1_70B_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.13,
         euro_per_1M_output_tokens=0.4,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="70B",
     )
     provider = ModelProvider.nebius
 
@@ -37,6 +41,8 @@ class Nebius_Llama_3_1_8B_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.03,
         euro_per_1M_output_tokens=0.09,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="8B",
     )
     provider = ModelProvider.nebius
 
@@ -50,6 +56,8 @@ class Nebius_Llama_3_1_8B_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.02,
         euro_per_1M_output_tokens=0.06,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="8B",
     )
     provider = ModelProvider.nebius
 
@@ -63,6 +71,8 @@ class Nebius_Llama_3_1_405B_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=1.0,
         euro_per_1M_output_tokens=3.0,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="405B",
     )
     provider = ModelProvider.nebius
 
@@ -76,6 +86,8 @@ class Nebius_Mistral_Nemo_Instruct_2407_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.08,
         euro_per_1M_output_tokens=0.24,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="12.2B",
     )
     provider = ModelProvider.nebius
 
@@ -89,6 +101,8 @@ class Nebius_Mistral_Nemo_Instruct_2407_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.04,
         euro_per_1M_output_tokens=0.12,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="12.2B",
     )
     provider = ModelProvider.nebius
 
@@ -102,6 +116,8 @@ class Nebius_Mixtral_8x7B_Instruct_v0_1_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.15,
         euro_per_1M_output_tokens=0.45,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="46.7B",
     )
     provider = ModelProvider.nebius
 
@@ -115,6 +131,8 @@ class Nebius_Mixtral_8x7B_Instruct_v0_1_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.08,
         euro_per_1M_output_tokens=0.24,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="46.7B",
     )
     provider = ModelProvider.nebius
 
@@ -128,6 +146,8 @@ class Nebius_Mixtral_8x22B_Instruct_v0_1_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.7,
         euro_per_1M_output_tokens=2.1,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="141B",
     )
     provider = ModelProvider.nebius
 
@@ -141,6 +161,8 @@ class Nebius_Mixtral_8x22B_Instruct_v0_1_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.4,
         euro_per_1M_output_tokens=1.2,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="141B",
     )
     provider = ModelProvider.nebius
 
@@ -154,6 +176,8 @@ class Nebius_Qwen2_5_Coder_7B_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.03,
         euro_per_1M_output_tokens=0.09,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="7B",
     )
     provider = ModelProvider.nebius
 
@@ -167,6 +191,8 @@ class Nebius_Qwen2_5_Coder_7B_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.01,
         euro_per_1M_output_tokens=0.03,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="7B",
     )
     provider = ModelProvider.nebius
 
@@ -180,6 +206,8 @@ class Nebius_Qwen2_5_Coder_7B_Instruct_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.03,
         euro_per_1M_output_tokens=0.09,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="7B",
     )
     provider = ModelProvider.nebius
 
@@ -193,6 +221,8 @@ class Nebius_Qwen2_5_Coder_7B_Instruct_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.01,
         euro_per_1M_output_tokens=0.03,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="7B",
     )
     provider = ModelProvider.nebius
 
@@ -206,6 +236,8 @@ class Nebius_DeepSeek_Coder_V2_Lite_Instruct_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.08,
         euro_per_1M_output_tokens=0.24,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="15.7B",
     )
     provider = ModelProvider.nebius
 
@@ -219,6 +251,8 @@ class Nebius_DeepSeek_Coder_V2_Lite_Instruct_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.04,
         euro_per_1M_output_tokens=0.12,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="15.7B",
     )
     provider = ModelProvider.nebius
 
@@ -232,6 +266,8 @@ class Nebius_Phi_3_mini_4k_instruct_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.13,
         euro_per_1M_output_tokens=0.4,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="3.82B",
     )
     provider = ModelProvider.nebius
 
@@ -245,6 +281,8 @@ class Nebius_Phi_3_mini_4k_instruct_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.04,
         euro_per_1M_output_tokens=0.13,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="3.82B",
     )
     provider = ModelProvider.nebius
 
@@ -258,6 +296,8 @@ class Nebius_Phi_3_medium_128k_instruct_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.15,
         euro_per_1M_output_tokens=0.45,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="3.82B",
     )
     provider = ModelProvider.nebius
 
@@ -271,6 +311,8 @@ class Nebius_Phi_3_medium_128k_instruct_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.1,
         euro_per_1M_output_tokens=0.3,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="3.82B",
     )
     provider = ModelProvider.nebius
 
@@ -284,6 +326,8 @@ class Nebius_OLMo_7B_Instruct(BaseLLMModel):
         euro_per_1M_input_tokens=0.08,
         euro_per_1M_output_tokens=0.24,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="6.89B",
     )
     provider = ModelProvider.nebius
 
@@ -297,6 +341,8 @@ class Nebius_Gemma_2_9b_it_fast(BaseLLMModel):
         euro_per_1M_input_tokens=0.03,
         euro_per_1M_output_tokens=0.09,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="9.24B",
     )
     provider = ModelProvider.nebius
 
@@ -310,5 +356,7 @@ class Nebius_Gemma_2_9b_it_cheap(BaseLLMModel):
         euro_per_1M_input_tokens=0.02,
         euro_per_1M_output_tokens=0.06,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="9.24B",
     )
     provider = ModelProvider.nebius

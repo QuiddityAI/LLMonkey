@@ -1,6 +1,6 @@
 import re
 from abc import ABCMeta, abstractmethod
-from typing import Dict, List, Type
+from typing import Dict, List, Self, Type
 
 from pydantic import BaseModel
 
@@ -42,19 +42,36 @@ class BaseLLMModel(metaclass=ABCMeta):
         return {model.__name__: model for model in cls._get_subclasses()}
 
     @classmethod
-    def available_models(cls) -> Dict[str, ModelConfig]:
+    def available_models(cls) -> Dict[str, type[Self]]:
         """
-        Get a dictionary of available models.
+        Get a dictionary of available model classes.
 
         Returns:
-        A dictionary of model identifiers to their configurations.
+        A dictionary of model identifiers to their classes.
         """
         if getattr(cls, "_models", None) is None:
             cls._models = cls._build_models_dict()
         return cls._models
 
     @classmethod
-    def load(self, model_class_name: str, **kwargs) -> "BaseLLMModel":
+    def available_model_configs(cls) -> List[str]:
+        """
+        Get a dictionary of available model configs,
+        combining the config of the model and of the provider.
+        """
+        if getattr(cls, "_models", None) is None:
+            cls._models = cls._build_models_dict()
+        result = {}
+        for model_name, model_class in cls._models.items():
+            # this will serialize all the fields of the model config
+            # including enums and other nested models
+            result[model_name] = model_class.config.model_dump(mode="json")
+            # add the provider to the result
+            result[model_name]["provider"] = model_class.provider.value
+        return result
+
+    @classmethod
+    def load(self, model_class_name: str, **kwargs) -> Self:
         """
         Load a model by its class name. Use `available_models` to get the list of available models.
 

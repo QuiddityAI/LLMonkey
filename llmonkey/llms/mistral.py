@@ -1,4 +1,4 @@
-from ..models import ModelCapabilities, ModelConfig, ModelProvider
+from ..models import ModelCapabilities, ModelConfig, ModelLocation, ModelProvider
 from .base_llm import BaseLLMModel
 
 
@@ -11,6 +11,8 @@ class Mistral_Ministral3b(BaseLLMModel):
         euro_per_1M_input_tokens=0.04,
         euro_per_1M_output_tokens=0.04,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="3B",
     )
     provider = ModelProvider.mistral
 
@@ -24,6 +26,8 @@ class Mistral_Ministral8b(BaseLLMModel):
         euro_per_1M_input_tokens=0.1,
         euro_per_1M_output_tokens=0.1,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="8B",
     )
     provider = ModelProvider.mistral
 
@@ -37,6 +41,8 @@ class Mistral_Mistral_Large(BaseLLMModel):
         euro_per_1M_input_tokens=2,
         euro_per_1M_output_tokens=6,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="123B",
     )
     provider = ModelProvider.mistral
 
@@ -50,6 +56,8 @@ class Mistral_Mistral_Small(BaseLLMModel):
         euro_per_1M_input_tokens=0.2,
         euro_per_1M_output_tokens=0.6,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="22B",
     )
     provider = ModelProvider.mistral
 
@@ -63,6 +71,8 @@ class Mistral_Mistral_Embed(BaseLLMModel):
         euro_per_1M_input_tokens=0.1,
         euro_per_1M_output_tokens=0,
         capabilities=[ModelCapabilities.embeddings],
+        location=ModelLocation.EU,
+        model_size="N/A",
     )
     provider = ModelProvider.mistral
 
@@ -76,6 +86,8 @@ class Mistral_Mistral_Nemo(BaseLLMModel):
         euro_per_1M_input_tokens=0.15,
         euro_per_1M_output_tokens=0.15,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="12B",
     )
     provider = ModelProvider.mistral
 
@@ -89,6 +101,8 @@ class Mistral_Codestral(BaseLLMModel):
         euro_per_1M_input_tokens=0.2,
         euro_per_1M_output_tokens=0.6,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="22B",
     )
     provider = ModelProvider.mistral
 
@@ -101,6 +115,8 @@ class Mistral_Pixtral(BaseLLMModel):
         max_input_tokens=128000,
         euro_per_1M_input_tokens=0.15,
         euro_per_1M_output_tokens=0.15,
-        capabilities=[ModelCapabilities.vision],
+        capabilities=[ModelCapabilities.vision, ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        model_size="12B",
     )
     provider = ModelProvider.mistral

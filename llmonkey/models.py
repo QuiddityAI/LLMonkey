@@ -111,6 +111,13 @@ class ModelCapabilities(str, Enum):
     vision = "vision"
 
 
+class ModelLocation(str, Enum):
+    US = "US"
+    EU = "EU"
+    CA = "CA"
+    OTHER = "OTHER"
+
+
 class ModelConfig(BaseModel):
     identifier: str = Field(..., description="Identifier of the model")
     verbose_name: str = Field(..., description="Verbose name of the model")
@@ -121,3 +128,7 @@ class ModelConfig(BaseModel):
         ..., description="Cost per 1M output tokens"
     )
     capabilities: List[ModelCapabilities] = Field(..., description="Model capabilities")
+    location: ModelLocation | None = Field(
+        None, description="Model geographical location"
+    )
+    model_size: str | None = Field(None, description="Model size")

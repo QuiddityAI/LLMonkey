@@ -1,4 +1,4 @@
-from ..models import ModelCapabilities, ModelConfig, ModelProvider
+from ..models import ModelCapabilities, ModelConfig, ModelLocation, ModelProvider
 from .base_llm import BaseLLMModel
 
 
@@ -11,6 +11,8 @@ class OpenAI_GPT4o(BaseLLMModel):
         euro_per_1M_input_tokens=2.50,
         euro_per_1M_output_tokens=10.00,
         capabilities=[ModelCapabilities.chat, ModelCapabilities.vision],
+        location=ModelLocation.US,
+        parameters="1800B",  # Add the number of parameters here
     )
     provider = ModelProvider.openai
 
@@ -24,6 +26,8 @@ class OpenAI_GPT4o_Mini(BaseLLMModel):
         euro_per_1M_input_tokens=0.150,
         euro_per_1M_output_tokens=0.600,
         capabilities=[ModelCapabilities.chat, ModelCapabilities.vision],
+        location=ModelLocation.US,
+        parameters="70B",  # Add the number of parameters here
     )
     provider = ModelProvider.openai
 
@@ -37,6 +41,8 @@ class OpenAI_o1(BaseLLMModel):
         euro_per_1M_input_tokens=15.00,
         euro_per_1M_output_tokens=60.00,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.US,
+        parameters="1800B",  # Add the number of parameters here
     )
     provider = ModelProvider.openai
 
@@ -50,6 +56,8 @@ class OpenAI_o1_Mini(BaseLLMModel):
         euro_per_1M_input_tokens=3.00,
         euro_per_1M_output_tokens=12.00,
         capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.US,
+        parameters="70B",  # Add the number of parameters here
     )
     provider = ModelProvider.openai
 
@@ -63,6 +71,8 @@ class OpenAI_TextEmbedding_3_small(BaseLLMModel):
         euro_per_1M_input_tokens=0.020,
         euro_per_1M_output_tokens=0.0,
         capabilities=[ModelCapabilities.embeddings],
+        location=ModelLocation.US,
+        parameters="?",  # Add the number of parameters here
     )
     provider = ModelProvider.openai
 
@@ -76,6 +86,8 @@ class OpenAI_TextEmbedding_3_large(BaseLLMModel):
         euro_per_1M_input_tokens=0.130,
         euro_per_1M_output_tokens=0.0,
         capabilities=[ModelCapabilities.embeddings],
+        location=ModelLocation.US,
+        parameters="?",  # Add the number of parameters here
     )
     provider = ModelProvider.openai
 
@@ -89,5 +101,7 @@ class OpenAI_Ada_v2(BaseLLMModel):
         euro_per_1M_input_tokens=0.100,
         euro_per_1M_output_tokens=0.0,
         capabilities=[ModelCapabilities.embeddings],
+        location=ModelLocation.US,
+        parameters="?",  # Add the number of parameters here
     )
     provider = ModelProvider.openai
