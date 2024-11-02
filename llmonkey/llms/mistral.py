@@ -12,7 +12,7 @@ class Mistral_Ministral3b(BaseLLMModel):
         euro_per_1M_output_tokens=0.04,
         capabilities=[ModelCapabilities.chat],
         location=ModelLocation.EU,
-        model_size="3B",
+        parameters="3B",
     )
     provider = ModelProvider.mistral
 
@@ -27,7 +27,7 @@ class Mistral_Ministral8b(BaseLLMModel):
         euro_per_1M_output_tokens=0.1,
         capabilities=[ModelCapabilities.chat],
         location=ModelLocation.EU,
-        model_size="8B",
+        parameters="8B",
     )
     provider = ModelProvider.mistral
 
@@ -42,7 +42,7 @@ class Mistral_Mistral_Large(BaseLLMModel):
         euro_per_1M_output_tokens=6,
         capabilities=[ModelCapabilities.chat],
         location=ModelLocation.EU,
-        model_size="123B",
+        parameters="123B",
     )
     provider = ModelProvider.mistral
 
@@ -57,7 +57,7 @@ class Mistral_Mistral_Small(BaseLLMModel):
         euro_per_1M_output_tokens=0.6,
         capabilities=[ModelCapabilities.chat],
         location=ModelLocation.EU,
-        model_size="22B",
+        parameters="22B",
     )
     provider = ModelProvider.mistral
 
@@ -72,7 +72,7 @@ class Mistral_Mistral_Embed(BaseLLMModel):
         euro_per_1M_output_tokens=0,
         capabilities=[ModelCapabilities.embeddings],
         location=ModelLocation.EU,
-        model_size="N/A",
+        parameters="N/A",
     )
     provider = ModelProvider.mistral
 
@@ -87,7 +87,7 @@ class Mistral_Mistral_Nemo(BaseLLMModel):
         euro_per_1M_output_tokens=0.15,
         capabilities=[ModelCapabilities.chat],
         location=ModelLocation.EU,
-        model_size="12B",
+        parameters="12B",
     )
     provider = ModelProvider.mistral
 
@@ -102,7 +102,7 @@ class Mistral_Codestral(BaseLLMModel):
         euro_per_1M_output_tokens=0.6,
         capabilities=[ModelCapabilities.chat],
         location=ModelLocation.EU,
-        model_size="22B",
+        parameters="22B",
     )
     provider = ModelProvider.mistral
 
@@ -117,6 +117,6 @@ class Mistral_Pixtral(BaseLLMModel):
         euro_per_1M_output_tokens=0.15,
         capabilities=[ModelCapabilities.vision, ModelCapabilities.chat],
         location=ModelLocation.EU,
-        model_size="12B",
+        parameters="12B",
     )
     provider = ModelProvider.mistral

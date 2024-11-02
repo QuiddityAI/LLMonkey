@@ -131,4 +131,4 @@ class ModelConfig(BaseModel):
     location: ModelLocation | None = Field(
         None, description="Model geographical location"
     )
-    model_size: str | None = Field(None, description="Model size")
+    parameters: str | None = Field(None, description="Model size")
