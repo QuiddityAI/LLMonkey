@@ -41,6 +41,8 @@ class GoogleProvider(BaseModelProvider):
         contents = []
         for msg in request.conversation:
             if msg.role == "system":
+                # Google models can't work with only system messages,
+                # so we'll use user messages instead for everything
                 contents.append(Content(role="user", parts=[Part.from_text(msg.content)]))
             elif msg.role == "user":
                 parts = []
