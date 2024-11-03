@@ -1,8 +1,10 @@
-import base64
-import os
+import logging
+
+from ratelimit import RateLimitException, limits, sleep_and_retry
 
 import vertexai
 from vertexai.generative_models import GenerativeModel, Content, Image, Part
+from google.api_core.exceptions import ResourceExhausted
 
 from ..models import (
     ChatRequest,
@@ -19,7 +21,7 @@ class GoogleProvider(BaseModelProvider):
     def __init__(self, api_key: str):
         # note: the api_key is not used for the Google provider, instead an ADC (Application Default Credentials) is used
         PROJECT_ID = "visual-data-map"
-        vertexai.init(project=PROJECT_ID, location="us-central1")
+        vertexai.init(project=PROJECT_ID, location="europe-west3")
         super().__init__(api_key, None)
 
     def generate_prompt_response(self, request: ChatRequest) -> ChatResponse:
@@ -28,6 +30,7 @@ class GoogleProvider(BaseModelProvider):
         """
         return self.generate_chat_response(request)
 
+    @sleep_and_retry
     def generate_chat_response(self, request: ChatRequest) -> ChatResponse:
         """
         Handle multi-turn chat responses.
@@ -54,13 +57,17 @@ class GoogleProvider(BaseModelProvider):
             else:
                 raise ValueError(f"Unknown role: {msg.role}")
 
-        response = model.generate_content(
-            contents,
-            generation_config={
-                "temperature": request.temperature,
-                "max_output_tokens": request.max_tokens
-                }
-            )
+        try:
+            response = model.generate_content(
+                contents,
+                generation_config={
+                    "temperature": request.temperature,
+                    "max_output_tokens": request.max_tokens
+                    }
+                )
+        except ResourceExhausted as e:
+            logging.error(f"ResourceExhausted: {e}, waiting 10 seconds")
+            raise RateLimitException("ResourceExhausted", 10)
 
         conversation = request.conversation + [
             PromptMessage(role="assistant", content=response.text)
