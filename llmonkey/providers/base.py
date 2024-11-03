@@ -120,7 +120,9 @@ class BaseModelProvider(ABC):
                 # Try to parse string as JSON, assumind last element of conversation is the output of LLM
                 s = result.conversation[-1].content
                 s = s.strip().strip("```json").strip("```").strip("\"").strip("'").strip()
-                array_of_dicts: list = json.loads(s)
+                # find first [ character:
+                start = s.find("[")
+                array_of_dicts: list = json.loads(s[start:])
                 array_of_models = [data_model(**d) for d in array_of_dicts]
                 return array_of_models, result  # Validate against Pydantic model
             except (json.JSONDecodeError, ValidationError) as e:
