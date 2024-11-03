@@ -142,6 +142,56 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
         resp.token_usage.total_cost = self._calculate_cost(resp.token_usage)
         return data_instance, resp
 
+    def generate_structured_array_response(
+        self,
+        data_model: Type[BaseModel],
+        user_prompt: str = "",
+        system_prompt: str = "",
+        image=None,
+        temperature=0.7,
+        max_tokens=None,
+        as_dicts=False,
+    ) -> tuple[list[BaseModel | dict], ChatResponse]:
+        """
+        Generate a structured response using a Pydantic model.
+
+        This method will call `generate_prompt_response` and attempt to
+        parse the response as JSON. The parsed data will be validated
+        against the given Pydantic model.
+
+        If validation fails, it will retry the function call up to a
+        certain number of times, specified by the `retries` parameter.
+        Original result of the decorated function will be returned as the
+        second element of the tuple.
+
+        If all retries fail, it will raise a ValueError with a message
+        indicating how many retries were attempted.
+        """
+        provider = self.provider
+        model_name = self.config.identifier
+        conversation = []
+        if system_prompt:
+            conversation.append(PromptMessage(role="system", content=system_prompt))
+        if user_prompt:
+            conversation.append(
+                PromptMessage(role="user", content=user_prompt, image=image)
+            )
+        self._validate_input(conversation)
+        chat_request = ChatRequest(
+            model_provider=provider,
+            model_name=model_name,
+            conversation=conversation,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        data_instance_array, resp = self.provider_instance.generate_structured_array_response(
+            chat_request, data_model=data_model
+        )
+        resp.token_usage.total_cost = self._calculate_cost(resp.token_usage)
+        if as_dicts:
+            return [data.model_dump() for data in data_instance_array], resp
+        return data_instance_array, resp
+
     def _calculate_cost(self, token_usage: TokenUsage) -> float:
         """
         Calculate the cost of the request based on the token usage.
