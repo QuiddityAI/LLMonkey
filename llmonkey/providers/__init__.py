@@ -14,6 +14,7 @@ from .openai_like import (
     NebiusProvider,
     OpenAIProvider,
 )
+from .google import GoogleProvider
 
 
 class ProviderConfig(BaseModel):
@@ -45,4 +46,5 @@ providers = {
     "nebius": ProviderConfig(
         provider=ModelProvider.nebius, implementation=NebiusProvider
     ),
+    "google": ProviderConfig(provider=ModelProvider.google, implementation=GoogleProvider),
 }

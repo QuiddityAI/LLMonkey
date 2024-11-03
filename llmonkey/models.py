@@ -12,6 +12,7 @@ class ModelProvider(str, Enum):
     ionos = "ionos"
     mistral = "mistral"
     nebius = "nebius"
+    google = "google"
     # for the future:
     # self_hosted = "self_hosted"
 
