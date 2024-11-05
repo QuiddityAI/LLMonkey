@@ -2,9 +2,11 @@ import json
 from abc import ABC, abstractmethod
 from json import JSONDecoder
 from typing import Any, Dict, Tuple, Type
+import logging
 
 import requests
 from pydantic import BaseModel, ValidationError
+import yaml
 
 from ..models import (
     ChatRequest,
@@ -120,13 +122,22 @@ class BaseModelProvider(ABC):
                 # Try to parse string as JSON, assumind last element of conversation is the output of LLM
                 s = result.conversation[-1].content
                 s = s.strip().strip("```json").strip("```").strip("\"").strip("'").strip()
+                # sometimes the model puts double quotes in strings, this doen't cover all cases but it's a start:
+                s = s.replace("\" ", "'")
                 # find first [ character:
                 start = s.find("[")
-                array_of_dicts: list = json.loads(s[start:])
+                try:
+                    array_of_dicts: list = json.loads(s[start:])
+                except json.JSONDecodeError as json_error:
+                    try:
+                        array_of_dicts: list = yaml.safe_load(s[start:])
+                    except yaml.YAMLError as yaml_error:
+                        raise json_error
                 array_of_models = [data_model(**d) for d in array_of_dicts]
                 return array_of_models, result  # Validate against Pydantic model
-            except (json.JSONDecodeError, ValidationError) as e:
+            except (json.JSONDecodeError, ValidationError, yaml.YAMLError) as e:
                 if attempt == retries - 1:
+                    logging.error(f"Failed to parse JSON: {e}")
                     raise ValueError(
                         f"Validation failed after {retries} attempts: {e}. str: {s}"
                     )
