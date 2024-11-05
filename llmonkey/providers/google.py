@@ -65,8 +65,9 @@ class GoogleProvider(BaseModelProvider):
                 generation_config={
                     "temperature": request.temperature,
                     "max_output_tokens": request.max_tokens
-                    }
-                )
+                    },
+                safety_settings=[],  # disable safety settings (filtering of unsafe content)
+            )
         except ResourceExhausted as e:
             logging.error(f"ResourceExhausted: {e}, waiting 10 seconds")
             raise RateLimitException("ResourceExhausted", 10)

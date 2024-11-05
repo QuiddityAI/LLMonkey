@@ -32,6 +32,21 @@ class Google_Gemini_Flash_1_5_v2(BaseLLMModel):
     provider = ModelProvider.google
 
 
+class Google_Gemini_Flash_1_5_latest(BaseLLMModel):
+    config = ModelConfig(
+        identifier="gemini-1.5-flash-latest",
+        verbose_name="Google Gemini Flash 1.5 (latest)",
+        description="Google's Gemini Flash 1.5 model (latest)",
+        max_input_tokens=1_048_576,
+        euro_per_1M_input_tokens=0.017,
+        euro_per_1M_output_tokens=0.07,
+        capabilities=[ModelCapabilities.chat, ModelCapabilities.vision],
+        location=ModelLocation.EU,
+        parameters="~16B",
+    )
+    provider = ModelProvider.google
+
+
 class Google_Gemini_Flash_1_5_8B(BaseLLMModel):
     config = ModelConfig(
         identifier="gemini-1.5-flash-8b",
