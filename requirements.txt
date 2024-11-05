@@ -1,5 +1,6 @@
 pydantic >= 2.8.0
 python_dotenv >= 1.0.0
+pyyaml >= 6.0.2
 ratelimit >= 2.2.0
 requests >= 2.32.0
 google-cloud-aiplatform >= 1.64
