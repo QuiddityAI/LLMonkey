@@ -36,7 +36,7 @@ class Google_Gemini_Flash_1_5_latest(BaseLLMModel):
     config = ModelConfig(
         identifier="gemini-1.5-flash-latest",
         verbose_name="Google Gemini Flash 1.5 (latest)",
-        description="Google's Gemini Flash 1.5 model (latest)",
+        description="not available in europe-west3 for now",
         max_input_tokens=1_048_576,
         euro_per_1M_input_tokens=0.017,
         euro_per_1M_output_tokens=0.07,

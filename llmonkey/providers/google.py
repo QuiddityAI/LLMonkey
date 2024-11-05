@@ -3,7 +3,7 @@ import logging
 from ratelimit import RateLimitException, limits, sleep_and_retry
 
 import vertexai
-from vertexai.generative_models import GenerativeModel, Content, Image, Part
+from vertexai.generative_models import GenerativeModel, Content, Image, Part, HarmCategory, HarmBlockThreshold
 from google.api_core.exceptions import ResourceExhausted
 
 from ..models import (
@@ -66,7 +66,13 @@ class GoogleProvider(BaseModelProvider):
                     "temperature": request.temperature,
                     "max_output_tokens": request.max_tokens
                     },
-                safety_settings=[],  # disable safety settings (filtering of unsafe content)
+                safety_settings={
+                    HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY: HarmBlockThreshold.OFF,
+                    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.OFF,
+                    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.OFF,
+                    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.OFF,
+                    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.OFF,
+                },  # disable safety settings (filtering of unsafe content)
             )
         except ResourceExhausted as e:
             logging.error(f"ResourceExhausted: {e}, waiting 10 seconds")
