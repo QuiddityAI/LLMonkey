@@ -30,8 +30,8 @@ class OpenAILikeProvider(BaseModelProvider):
 
         messages = []
         for msg in request.conversation:
-            if msg.role == "system":
-                json_message = {"role": "system", "content": msg.content}
+            if msg.role in ["system", "assistant"]:
+                json_message = {"role": msg.role, "content": msg.content}
                 messages.append(json_message)
                 continue
             # different types of content is only supported for user

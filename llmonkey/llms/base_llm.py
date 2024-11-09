@@ -1,6 +1,6 @@
 import re
 from abc import ABCMeta, abstractmethod
-from typing import Dict, List, Self, Type
+from typing import Dict, Generic, List, Self, Type, TypeVar
 
 from pydantic import BaseModel
 
@@ -18,6 +18,8 @@ from ..models import (
 from ..providers import providers
 from ..providers.base import BaseModelProvider
 from ..recipes.llm_mixins import ConvenienceLLMMixin
+
+T = TypeVar("BaseModelAlias")
 
 
 def count_tokens_rough(text):
@@ -97,13 +99,13 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
 
     def generate_structured_response(
         self,
-        data_model: Type[BaseModel],
+        data_model: Type[T],
         user_prompt: str = "",
         system_prompt: str = "",
         image=None,
         temperature=0.7,
         max_tokens=None,
-    ):
+    ) -> tuple[T, ChatResponse]:
         """
         Generate a structured response using a Pydantic model.
 
@@ -144,14 +146,14 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
 
     def generate_structured_array_response(
         self,
-        data_model: Type[BaseModel],
+        data_model: Type[T],
         user_prompt: str = "",
         system_prompt: str = "",
         image=None,
         temperature=0.7,
         max_tokens=None,
         as_dicts=False,
-    ) -> tuple[list[BaseModel | dict], ChatResponse]:
+    ) -> tuple[list[T | dict], ChatResponse]:
         """
         Generate a structured response using a Pydantic model.
 
@@ -184,7 +186,10 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
             temperature=temperature,
             max_tokens=max_tokens,
         )
-        data_instance_array, resp = self.provider_instance.generate_structured_array_response(
+        (
+            data_instance_array,
+            resp,
+        ) = self.provider_instance.generate_structured_array_response(
             chat_request, data_model=data_model
         )
         resp.token_usage.total_cost = self._calculate_cost(resp.token_usage)

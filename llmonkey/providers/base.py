@@ -1,12 +1,12 @@
 import json
+import logging
 from abc import ABC, abstractmethod
 from json import JSONDecoder
-from typing import Any, Dict, Tuple, Type
-import logging
+from typing import Any, Dict, Tuple, Type, TypeVar
 
 import requests
-from pydantic import BaseModel, ValidationError
 import yaml
+from pydantic import BaseModel, ValidationError
 
 from ..models import (
     ChatRequest,
@@ -17,6 +17,8 @@ from ..models import (
     RerankRequest,
     RerankResponse,
 )
+
+T = TypeVar("BaseModelAlias", BaseModel)
 
 
 def extract_json_objects(text, decoder=JSONDecoder()):
@@ -66,8 +68,8 @@ class BaseModelProvider(ABC):
         return response.json()
 
     def generate_structured_response(
-        self, request: ChatRequest, data_model: Type[BaseModel], retries=3
-    ) -> Tuple[BaseModel, ChatResponse]:
+        self, request: ChatRequest, data_model: Type[T], retries=3
+    ) -> Tuple[T, ChatResponse]:
         """
         Generate a structured response using a Pydantic model.
 
@@ -121,9 +123,16 @@ class BaseModelProvider(ABC):
             try:
                 # Try to parse string as JSON, assumind last element of conversation is the output of LLM
                 s = result.conversation[-1].content
-                s = s.strip().strip("```json").strip("```").strip("\"").strip("'").strip()
+                s = (
+                    s.strip()
+                    .strip("```json")
+                    .strip("```")
+                    .strip('"')
+                    .strip("'")
+                    .strip()
+                )
                 # sometimes the model puts double quotes in strings, this doen't cover all cases but it's a start:
-                s = s.replace("\" ", "'")
+                s = s.replace('" ', "'")
                 # find first [ character:
                 start = s.find("[")
                 try:
