@@ -18,7 +18,7 @@ from ..models import (
     RerankResponse,
 )
 
-T = TypeVar("BaseModelAlias", BaseModel)
+T = TypeVar("BaseModelAlias")
 
 
 def extract_json_objects(text, decoder=JSONDecoder()):
@@ -92,8 +92,11 @@ class BaseModelProvider(ABC):
                 s = result.conversation[-1].content
                 # try to be forgiving and extract anything that looks like a JSON object
                 data = [r for r in extract_json_objects(s)][0]
-                return data_model(**data), result  # Validate against Pydantic model
-            except (json.JSONDecodeError, ValidationError) as e:
+                return (
+                    data_model.model_validate(data),
+                    result,
+                )  # Validate against Pydantic model
+            except (json.JSONDecodeError, ValidationError, IndexError) as e:
                 if attempt == retries - 1:
                     raise ValueError(
                         f"Validation failed after {retries} attempts: {e}. str: {s}"

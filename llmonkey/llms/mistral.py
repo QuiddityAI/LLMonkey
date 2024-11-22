@@ -120,3 +120,18 @@ class Mistral_Pixtral(BaseLLMModel):
         parameters="12B",
     )
     provider = ModelProvider.mistral
+
+
+class Mistral_Pixtral_Large(BaseLLMModel):
+    config = ModelConfig(
+        identifier="pixtral-large-latest",
+        verbose_name="Pixtral Large",
+        description="A 123B model combining image understanding with text processing, released in September 2024.",
+        max_input_tokens=128000,
+        euro_per_1M_input_tokens=2,
+        euro_per_1M_output_tokens=6,
+        capabilities=[ModelCapabilities.vision, ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        parameters="123B",
+    )
+    provider = ModelProvider.mistral
