@@ -57,7 +57,7 @@ class OpenAILikeProvider(BaseModelProvider):
             "stream": False,
         }
 
-        from llms.openai import OpenAI_o1, OpenAI_o1_Mini
+        from llmonkey.llms.openai import OpenAI_o1, OpenAI_o1_Mini
         if request.model_name in [OpenAI_o1.config.identifier, OpenAI_o1_Mini.config.identifier]:
             del payload["max_tokens"]
             del payload["temperature"]
