@@ -57,6 +57,16 @@ class OpenAILikeProvider(BaseModelProvider):
             "stream": False,
         }
 
+        from llms.openai import OpenAI_o1, OpenAI_o1_Mini
+        if request.model_name in [OpenAI_o1.config.identifier, OpenAI_o1_Mini.config.identifier]:
+            del payload["max_tokens"]
+            del payload["temperature"]
+            payload["max_completion_tokens"] = request.max_tokens
+            for message in messages:
+                # only roles user and assistant are allowed
+                if message["role"] == "system":
+                    message["role"] = "user"
+
         # Send the request to OpenAI API
         response_data = self._post(endpoint, payload)
         msg = response_data["choices"][0]["message"]
@@ -102,6 +112,11 @@ class OpenAILikeProvider(BaseModelProvider):
         embedding = response_data["data"][0]["embedding"]
 
         return EmbeddingResponse(embedding=embedding, model_used=request.model_provider)
+
+    def list_models(self):
+        endpoint = "models"
+        response_data = self._get(endpoint)
+        return response_data["data"]
 
 
 class OpenAIProvider(OpenAILikeProvider):

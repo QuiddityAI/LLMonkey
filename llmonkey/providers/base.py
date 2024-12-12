@@ -67,6 +67,18 @@ class BaseModelProvider(ABC):
             raise ValueError(f"LLMonkey: Error {response.status_code}: {response.text}")
         return response.json()
 
+    def _get(self, endpoint: str) -> Dict[str, Any]:
+        """
+        Helper method to make GET requests to the provider's API.
+        """
+        url = f"{self.base_url}/{endpoint}"
+        try:
+            response = requests.get(url, headers=self.headers)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            raise ValueError(f"LLMonkey: Error {response.status_code}: {response.text}")
+        return response.json()
+
     def generate_structured_response(
         self, request: ChatRequest, data_model: Type[T], retries=3
     ) -> Tuple[T, ChatResponse]:
