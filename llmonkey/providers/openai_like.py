@@ -67,6 +67,13 @@ class OpenAILikeProvider(BaseModelProvider):
                 if message["role"] == "system":
                     message["role"] = "user"
 
+        from llmonkey.llms.deepinfra import Deepinfra_Qwen_QwQ_32B
+        if request.model_name == Deepinfra_Qwen_QwQ_32B.config.identifier:
+            for message in messages:
+                # only roles user and assistant are allowed / there needs to be at least one user message (?)
+                if message["role"] == "system":
+                    message["role"] = "user"
+
         # Send the request to OpenAI API
         response_data = self._post(endpoint, payload)
         msg = response_data["choices"][0]["message"]
