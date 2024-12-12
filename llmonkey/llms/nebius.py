@@ -2,10 +2,40 @@ from ..models import ModelCapabilities, ModelConfig, ModelLocation, ModelProvide
 from .base_llm import BaseLLMModel
 
 
+class Nebius_Llama_3_3_70B_fast(BaseLLMModel):
+    config = ModelConfig(
+        identifier="meta-llama/Llama-3.3-70B-Instruct-fast",
+        verbose_name="Nebius Llama 3.3 70B (fast)",
+        description="Nebius Llama 3.3 70B is a large-scale model with 128K context and a 70B parameter size.",
+        max_input_tokens=131072,
+        euro_per_1M_input_tokens=0.25,
+        euro_per_1M_output_tokens=0.75,
+        capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        parameters="70B",
+    )
+    provider = ModelProvider.nebius
+
+
+class Nebius_Llama_3_3_70B(BaseLLMModel):
+    config = ModelConfig(
+        identifier="meta-llama/Llama-3.3-70B-Instruct",
+        verbose_name="Nebius Llama 3.3 70B",
+        description="Nebius Llama 3.3 70B is a large-scale model with 128K context and a 70B parameter size.",
+        max_input_tokens=131072,
+        euro_per_1M_input_tokens=0.13,
+        euro_per_1M_output_tokens=0.4,
+        capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        parameters="70B",
+    )
+    provider = ModelProvider.nebius
+
+
 class Nebius_Llama_3_1_70B_fast(BaseLLMModel):
     config = ModelConfig(
         identifier="meta-llama/Meta-Llama-3.1-70B-Instruct-fast",
-        verbose_name="Nebius Llama 3.1 70B",
+        verbose_name="Nebius Llama 3.1 70B (fast)",
         description="Nebius Llama 3.1 70B is a large-scale model with 128K context and a 70B parameter size.",
         max_input_tokens=131072,
         euro_per_1M_input_tokens=0.25,
@@ -35,7 +65,7 @@ class Nebius_Llama_3_1_70B_cheap(BaseLLMModel):
 class Nebius_Llama_3_1_8B_fast(BaseLLMModel):
     config = ModelConfig(
         identifier="meta-llama/Meta-Llama-3.1-8B-Instruct-fast",
-        verbose_name="Nebius Llama 3.1 8B",
+        verbose_name="Nebius Llama 3.1 8B (fast)",
         description="Nebius Llama 3.1 8B is a medium-scale model with 128K context and an 8B parameter size.",
         max_input_tokens=131072,
         euro_per_1M_input_tokens=0.03,
@@ -58,6 +88,36 @@ class Nebius_Llama_3_1_8B_cheap(BaseLLMModel):
         capabilities=[ModelCapabilities.chat],
         location=ModelLocation.EU,
         parameters="8B",
+    )
+    provider = ModelProvider.nebius
+
+
+class Nebius_Llama_3_2_1B(BaseLLMModel):
+    config = ModelConfig(
+        identifier="meta-llama/Llama-3.2-1B-Instruct",
+        verbose_name="Nebius Llama 3.2 1B",
+        description="Nebius Llama 3.2 1B is a super small+fast+cheap model with 128K context and a 1B parameter size, but supposedly worse than Mistral 1B.",
+        max_input_tokens=131072,
+        euro_per_1M_input_tokens=0.005,
+        euro_per_1M_output_tokens=0.01,
+        capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        parameters="1B",
+    )
+    provider = ModelProvider.nebius
+
+
+class Nebius_Llama_3_2_3B(BaseLLMModel):
+    config = ModelConfig(
+        identifier="meta-llama/Llama-3.2-3B-Instruct",
+        verbose_name="Nebius Llama 3.2 3B",
+        description="Nebius Llama 3.2 3B is a super small+fast+cheap model with 128K context and a 1B parameter size, but supposedly worse than Mistral 3B.",
+        max_input_tokens=131072,
+        euro_per_1M_input_tokens=0.01,
+        euro_per_1M_output_tokens=0.02,
+        capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        parameters="3B",
     )
     provider = ModelProvider.nebius
 
@@ -358,5 +418,35 @@ class Nebius_Gemma_2_9b_it_cheap(BaseLLMModel):
         capabilities=[ModelCapabilities.chat],
         location=ModelLocation.EU,
         parameters="9.24B",
+    )
+    provider = ModelProvider.nebius
+
+
+class Nebius_Llama3_OpenBioLLM_8B(BaseLLMModel):
+    config = ModelConfig(
+        identifier="aaditya/Llama3-OpenBioLLM-8B",
+        verbose_name="Nebius Llama 3 OpenBioLLM 8B",
+        description="Nebius Llama 3 OpenBioLLM 8B is specialized in bio, medical and life sciences.",
+        max_input_tokens=128000,
+        euro_per_1M_input_tokens=0.13,
+        euro_per_1M_output_tokens=0.40,
+        capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        parameters="8B",
+    )
+    provider = ModelProvider.nebius
+
+
+class Nebius_Llama3_OpenBioLLM_70B(BaseLLMModel):
+    config = ModelConfig(
+        identifier="aaditya/Llama3-OpenBioLLM-70B",
+        verbose_name="Nebius Llama 3 OpenBioLLM 70B",
+        description="Nebius Llama 3 OpenBioLLM 70B is specialized in bio, medical and life sciences.",
+        max_input_tokens=128000,
+        euro_per_1M_input_tokens=0.13,
+        euro_per_1M_output_tokens=0.40,
+        capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        parameters="70B",
     )
     provider = ModelProvider.nebius
