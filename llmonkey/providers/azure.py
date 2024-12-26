@@ -6,6 +6,8 @@ from openai import AzureOpenAI
 from ..models import (
     ChatRequest,
     ChatResponse,
+    EmbeddingRequest,
+    EmbeddingResponse,
     PromptMessage,
     TokenUsage,
 )
@@ -79,8 +81,6 @@ class AzureOpenAIProvider(BaseModelProvider):
                     message["role"] = "user"
 
         # Send the request to OpenAI API
-        response_data = self._post(endpoint, payload)
-
         client = AzureOpenAI(
             azure_endpoint=self.base_url,
             api_key=self.api_key,
@@ -98,7 +98,8 @@ class AzureOpenAIProvider(BaseModelProvider):
             stop=None,
             stream=False
         )
-        msg = completion.choices[0].message
+        response_data = completion.model_dump()
+        msg = response_data["choices"][0]["message"]
         conversation = request.conversation + [
             PromptMessage(role=msg["role"], content=msg["content"])
         ]
@@ -113,3 +114,6 @@ class AzureOpenAIProvider(BaseModelProvider):
             model_used=request.model_name,
             token_usage=token_usage,
         )
+
+    def generate_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
+        raise NotImplementedError("Azure OpenAI embeddings not implemented")
