@@ -13,6 +13,8 @@ from .openai_like import (
     MistralProvider,
     NebiusProvider,
     OpenAIProvider,
+    AzureOpenAIProvider,
+    AzureNonOpenAIProvider,
 )
 from .google import GoogleProvider
 
@@ -47,4 +49,10 @@ providers = {
         provider=ModelProvider.nebius, implementation=NebiusProvider
     ),
     "google": ProviderConfig(provider=ModelProvider.google, implementation=GoogleProvider),
+    "azure_openai": ProviderConfig(
+        provider=ModelProvider.azure_openai, implementation=AzureOpenAIProvider
+    ),
+    "azure_non_openai": ProviderConfig(
+        provider=ModelProvider.azure_non_openai, implementation=AzureNonOpenAIProvider
+    ),
 }

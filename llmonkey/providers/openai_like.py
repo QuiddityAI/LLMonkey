@@ -159,3 +159,21 @@ class NebiusProvider(OpenAILikeProvider):
         if not api_key:
             api_key = os.environ.get("LLMONKEY_NEBIUS_API_KEY")
         super().__init__(api_key, "https://api.studio.nebius.ai/v1")
+
+
+class AzureOpenAIProvider(OpenAILikeProvider):
+    def __init__(self, api_key: str = ""):
+        if not api_key:
+            api_key = os.environ.get("LLMONKEY_AZURE_API_KEY")
+        if not os.environ.get("LLMONKEY_AZURE_OPENAI_URL"):
+            raise ValueError("LLMONKEY_AZURE_OPENAI_URL environment variable is required")
+        super().__init__(api_key, os.environ.get("LLMONKEY_AZURE_OPENAI_URL"))
+
+
+class AzureNonOpenAIProvider(OpenAILikeProvider):
+    def __init__(self, api_key: str = ""):
+        if not api_key:
+            api_key = os.environ.get("LLMONKEY_AZURE_API_KEY")
+        if not os.environ.get("LLMONKEY_AZURE_INFERENCE_URL"):
+            raise ValueError("LLMONKEY_AZURE_INFERENCE_URL environment variable is required")
+        super().__init__(api_key, os.environ.get("LLMONKEY_AZURE_INFERENCE_URL"))
