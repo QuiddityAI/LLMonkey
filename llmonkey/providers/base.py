@@ -64,7 +64,7 @@ class BaseModelProvider(ABC):
             response = requests.post(url, json=payload, headers=self.headers)
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            raise ValueError(f"LLMonkey: Error {response.status_code}: {response.text}")
+            raise ValueError(f"LLMonkey: Error {response.status_code}: {response.text}, URL: {url}")
         return response.json()
 
     def _get(self, endpoint: str) -> Dict[str, Any]:

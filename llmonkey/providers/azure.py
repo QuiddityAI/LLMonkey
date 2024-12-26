@@ -1,20 +1,24 @@
 import base64
 import os
 
+from openai import AzureOpenAI
+
 from ..models import (
     ChatRequest,
     ChatResponse,
-    EmbeddingRequest,
-    EmbeddingResponse,
     PromptMessage,
     TokenUsage,
 )
 from .base import BaseModelProvider
 
 
-class OpenAILikeProvider(BaseModelProvider):
-    def __init__(self, api_key: str, base_url: str):
-        super().__init__(api_key, base_url)
+class AzureOpenAIProvider(BaseModelProvider):
+    def __init__(self, api_key: str):
+        if not api_key:
+            api_key = os.environ.get("LLMONKEY_AZURE_API_KEY")
+        if not os.environ.get("LLMONKEY_AZURE_OPENAI_URL"):
+            raise ValueError("LLMONKEY_AZURE_OPENAI_URL environment variable is required")
+        super().__init__(api_key, os.environ.get("LLMONKEY_AZURE_OPENAI_URL"))
 
     def generate_prompt_response(self, request: ChatRequest) -> ChatResponse:
         """
@@ -76,7 +80,25 @@ class OpenAILikeProvider(BaseModelProvider):
 
         # Send the request to OpenAI API
         response_data = self._post(endpoint, payload)
-        msg = response_data["choices"][0]["message"]
+
+        client = AzureOpenAI(
+            azure_endpoint=self.base_url,
+            api_key=self.api_key,
+            api_version="2024-08-01-preview",
+        )
+        deployment = request.model_name  # is this always the same?
+        completion = client.chat.completions.create(
+            model=deployment,
+            messages=messages,
+            max_tokens=800,
+            temperature=0.7,
+            top_p=0.95,
+            frequency_penalty=0,
+            presence_penalty=0,
+            stop=None,
+            stream=False
+        )
+        msg = completion.choices[0].message
         conversation = request.conversation + [
             PromptMessage(role=msg["role"], content=msg["content"])
         ]
@@ -91,71 +113,3 @@ class OpenAILikeProvider(BaseModelProvider):
             model_used=request.model_name,
             token_usage=token_usage,
         )
-
-    def _prepare_image(self, msg: PromptMessage):
-        if not msg.image:
-            return None
-        image = msg.image
-        if isinstance(image, str):
-            image_url = {"url": image}
-        elif isinstance(image, bytes):
-            image_url = {
-                "url": "data:image/jpeg;base64,"
-                + base64.b64encode(image).decode("utf-8")
-            }
-        else:
-            raise ValueError(f"Image must be a URL or bytes, provided {type(image)}")
-        return image_url
-
-    def generate_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
-        """
-        Get text embeddings using OpenAI's embedding API.
-        """
-        endpoint = "embeddings"
-        payload = {"model": request.model_name, "input": request.text}
-
-        # Send the request to OpenAI API
-        response_data = self._post(endpoint, payload)
-        embedding = response_data["data"][0]["embedding"]
-
-        return EmbeddingResponse(embedding=embedding, model_used=request.model_provider)
-
-    def list_models(self):
-        endpoint = "models"
-        response_data = self._get(endpoint)
-        return response_data["data"]
-
-
-class OpenAIProvider(OpenAILikeProvider):
-    def __init__(self, api_key: str = ""):
-        if not api_key:
-            api_key = os.environ.get("LLMONKEY_OPENAI_API_KEY")
-        super().__init__(api_key, "https://api.openai.com/v1")
-
-
-class DeepInfraProvider(OpenAILikeProvider):
-    def __init__(self, api_key: str = ""):
-        if not api_key:
-            api_key = os.environ.get("LLMONKEY_DEEPINFRA_API_KEY")
-        super().__init__(api_key, "https://api.deepinfra.com/v1/openai")
-
-
-class IonosProvider(OpenAILikeProvider):
-    def __init__(self, api_key: str = ""):
-        if not api_key:
-            api_key = os.environ.get("LLMONKEY_IONOS_API_KEY")
-        super().__init__(api_key, "https://openai.inference.de-txl.ionos.com/v1")
-
-
-class MistralProvider(OpenAILikeProvider):
-    def __init__(self, api_key: str = ""):
-        if not api_key:
-            api_key = os.environ.get("LLMONKEY_MISTRAL_API_KEY")
-        super().__init__(api_key, "https://api.mistral.ai/v1")
-
-
-class NebiusProvider(OpenAILikeProvider):
-    def __init__(self, api_key: str = ""):
-        if not api_key:
-            api_key = os.environ.get("LLMONKEY_NEBIUS_API_KEY")
-        super().__init__(api_key, "https://api.studio.nebius.ai/v1")
