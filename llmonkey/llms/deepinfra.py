@@ -11,6 +11,6 @@ class Deepinfra_Qwen_QwQ_32B(BaseLLMModel):
         euro_per_1M_output_tokens=0.6,
         capabilities=[ModelCapabilities.chat],
         location=ModelLocation.US,
-        parameters="405B",
+        parameters="32B",
     )
     provider = ModelProvider.deepinfra
