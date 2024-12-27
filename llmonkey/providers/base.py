@@ -64,6 +64,18 @@ class BaseModelProvider(ABC):
             response = requests.post(url, json=payload, headers=self.headers)
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
+            raise ValueError(f"LLMonkey: Error {response.status_code}: {response.text}, URL: {url}")
+        return response.json()
+
+    def _get(self, endpoint: str) -> Dict[str, Any]:
+        """
+        Helper method to make GET requests to the provider's API.
+        """
+        url = f"{self.base_url}/{endpoint}"
+        try:
+            response = requests.get(url, headers=self.headers)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
             raise ValueError(f"LLMonkey: Error {response.status_code}: {response.text}")
         return response.json()
 

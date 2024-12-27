@@ -13,6 +13,8 @@ class ModelProvider(str, Enum):
     mistral = "mistral"
     nebius = "nebius"
     google = "google"
+    azure_openai = "azure_openai"
+    # azure_non_openai = "azure_non_openai"
     # for the future:
     # self_hosted = "self_hosted"
 

@@ -15,6 +15,7 @@ from .openai_like import (
     OpenAIProvider,
 )
 from .google import GoogleProvider
+from .azure import AzureOpenAIProvider
 
 
 class ProviderConfig(BaseModel):
@@ -47,4 +48,10 @@ providers = {
         provider=ModelProvider.nebius, implementation=NebiusProvider
     ),
     "google": ProviderConfig(provider=ModelProvider.google, implementation=GoogleProvider),
+    "azure_openai": ProviderConfig(
+        provider=ModelProvider.azure_openai, implementation=AzureOpenAIProvider
+    ),
+    # "azure_non_openai": ProviderConfig(
+    #     provider=ModelProvider.azure_non_openai, implementation=AzureNonOpenAIProvider
+    # ),
 }
