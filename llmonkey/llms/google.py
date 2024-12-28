@@ -77,6 +77,21 @@ class Google_Gemini_Flash_2_0_Exp(BaseLLMModel):
     provider = ModelProvider.google
 
 
+class Google_Gemini_Flash_2_0_Thinking_Exp(BaseLLMModel):
+    config = ModelConfig(
+        identifier="gemini-2.0-flash-thinking-exp",
+        verbose_name="Google Gemini Flash 2.0 Thinking Exp",
+        description="Google's Gemini Flash 2.0 Thinking Expermiental model",
+        max_input_tokens=32_768,
+        euro_per_1M_input_tokens=0.017,  # TODO
+        euro_per_1M_output_tokens=0.07,  # TODO
+        capabilities=[ModelCapabilities.chat],
+        location=ModelLocation.EU,
+        parameters="16B (?)",
+    )
+    provider = ModelProvider.google
+
+
 class Google_Gemini_Pro_1_5(BaseLLMModel):
     config = ModelConfig(
         identifier="gemini-1.5-pro",  # latest stable, 002 as of 2024-12-12
