@@ -1,4 +1,4 @@
-import json
+import json_repair
 from functools import wraps
 
 from pydantic import ValidationError
@@ -29,9 +29,9 @@ def validate_llm_output(model, retries=3):
                 result = func(*args, **kwargs)
                 try:
                     # Try to parse string as JSON, assumind last element of conversation is the output of LLM
-                    data = json.loads(s := result.conversation[-1].content)
+                    data = json_repair.loads(s := result.conversation[-1].content)
                     return model(**data), result  # Validate against Pydantic model
-                except (json.JSONDecodeError, ValidationError) as e:
+                except ValidationError as e:
                     if attempt == retries - 1:
                         raise ValueError(
                             f"Validation failed after {retries} attempts: {e}. str: {s}"
