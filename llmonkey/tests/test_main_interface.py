@@ -157,13 +157,14 @@ def test_generate_structured_array_response(llm_model, sample_data_model):
     for instance in instances:
         assert isinstance(instance, sample_data_model)
     assert len(instances) == 3
-    # Test with bad system prompt
-    instances, resp = llm_model.generate_structured_array_response(
-        user_prompt=f"Generate 3 random sea creatures, according to the schema below:\n {sample_data_model.model_json_schema()}",
-        system_prompt="You are a data generator. You always output user requested data as YAML.",
-        data_model=sample_data_model,
-    )
-    assert len(instances) == 0
+
+    with pytest.raises(ValueError):
+        instances, resp = llm_model.generate_structured_array_response(
+            user_prompt=f"Generate 3 random sea creatures, according to the schema below:\n {sample_data_model.model_json_schema()}",
+            system_prompt="You are a data generator. You always output user requested data as YAML.",
+            data_model=sample_data_model,
+        )
+        assert len(instances) == 0
 
 
 # disable due to cohere being disabled in the providers

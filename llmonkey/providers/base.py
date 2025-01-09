@@ -121,13 +121,15 @@ class BaseModelProvider(ABC):
             try:
                 # Try to parse string as JSON, assumind last element of conversation is the output of LLM
                 s = result.conversation[-1].content
-                try:
-                    array_of_dicts: list = json_repair.loads(s)
-                except json.JSONDecodeError as json_error:
-                    raise json_error
+                array_of_dicts: list = json_repair.loads(s)
+                # json_repair does not raise, but returns empty string if it can't parse
+                if not array_of_dicts:
+                    raise ValueError(f"Can't parse JSON: {s}")
+                if not isinstance(array_of_dicts, list):
+                    raise ValueError(f"Expected a list, got {type(array_of_dicts)}")
                 array_of_models = [data_model(**d) for d in array_of_dicts]
                 return array_of_models, result  # Validate against Pydantic model
-            except (json.JSONDecodeError, ValidationError, yaml.YAMLError) as e:
+            except Exception as e:
                 if attempt == retries - 1:
                     logging.error(f"Failed to parse JSON: {e}")
                     raise ValueError(
