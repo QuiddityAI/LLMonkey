@@ -123,7 +123,7 @@ class BaseModelProvider(ABC):
                 s = result.conversation[-1].content
                 array_of_dicts: list = json_repair.loads(s)
                 # json_repair does not raise, but returns empty string if it can't parse
-                if not array_of_dicts:
+                if array_of_dicts == "":
                     raise ValueError(f"Can't parse JSON: {s}")
                 if not isinstance(array_of_dicts, list):
                     raise ValueError(f"Expected a list, got {type(array_of_dicts)}")
