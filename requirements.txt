@@ -5,4 +5,5 @@ ratelimit >= 2.2.0
 requests >= 2.32.0
 google-cloud-aiplatform >= 1.64
 openai >= 1.58.1
+json-repair
 # cohere >= 5.9.0

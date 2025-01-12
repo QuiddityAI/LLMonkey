@@ -7,6 +7,7 @@ from typing import Any, Dict, Tuple, Type, TypeVar
 import requests
 import yaml
 from pydantic import BaseModel, ValidationError
+import json_repair
 
 from ..models import (
     ChatRequest,
@@ -19,26 +20,6 @@ from ..models import (
 )
 
 T = TypeVar("BaseModelAlias")
-
-
-def extract_json_objects(text, decoder=JSONDecoder()):
-    """Find JSON objects in text, and yield the decoded JSON data
-
-    Does not attempt to look for JSON arrays, text, or other JSON types outside
-    of a parent JSON object.
-
-    """
-    pos = 0
-    while True:
-        match = text.find("{", pos)
-        if match == -1:
-            break
-        try:
-            result, index = decoder.raw_decode(text[match:])
-            yield result
-            pos = match + index
-        except ValueError:
-            pos = match + 1
 
 
 class BaseModelProvider(ABC):
@@ -64,7 +45,9 @@ class BaseModelProvider(ABC):
             response = requests.post(url, json=payload, headers=self.headers)
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            raise ValueError(f"LLMonkey: Error {response.status_code}: {response.text}, URL: {url}")
+            raise ValueError(
+                f"LLMonkey: Error {response.status_code}: {response.text}, URL: {url}"
+            )
         return response.json()
 
     def _get(self, endpoint: str) -> Dict[str, Any]:
@@ -100,10 +83,10 @@ class BaseModelProvider(ABC):
         for attempt in range(retries):
             result = self.generate_prompt_response(request)
             try:
-                # Try to parse string as JSON, assumind last element of conversation is the output of LLM
+                # Try to parse string as JSON, assuming last element of conversation is the output of LLM
                 s = result.conversation[-1].content
                 # try to be forgiving and extract anything that looks like a JSON object
-                data = [r for r in extract_json_objects(s)][0]
+                data = json_repair.loads(s)
                 return (
                     data_model.model_validate(data),
                     result,
@@ -138,28 +121,15 @@ class BaseModelProvider(ABC):
             try:
                 # Try to parse string as JSON, assumind last element of conversation is the output of LLM
                 s = result.conversation[-1].content
-                s = (
-                    s.strip()
-                    .strip("```json")
-                    .strip("```")
-                    .strip('"')
-                    .strip("'")
-                    .strip()
-                )
-                # sometimes the model puts double quotes in strings, this doen't cover all cases but it's a start:
-                s = s.replace('" ', "'")
-                # find first [ character:
-                start = s.find("[")
-                try:
-                    array_of_dicts: list = json.loads(s[start:])
-                except json.JSONDecodeError as json_error:
-                    try:
-                        array_of_dicts: list = yaml.safe_load(s[start:])
-                    except yaml.YAMLError as yaml_error:
-                        raise json_error
+                array_of_dicts: list = json_repair.loads(s)
+                # json_repair does not raise, but returns empty string if it can't parse
+                if array_of_dicts == "":
+                    raise ValueError(f"Can't parse JSON: {s}")
+                if not isinstance(array_of_dicts, list):
+                    raise ValueError(f"Expected a list, got {type(array_of_dicts)}")
                 array_of_models = [data_model(**d) for d in array_of_dicts]
                 return array_of_models, result  # Validate against Pydantic model
-            except (json.JSONDecodeError, ValidationError, yaml.YAMLError) as e:
+            except Exception as e:
                 if attempt == retries - 1:
                     logging.error(f"Failed to parse JSON: {e}")
                     raise ValueError(
