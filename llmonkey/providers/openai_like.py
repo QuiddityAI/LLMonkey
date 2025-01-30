@@ -43,9 +43,7 @@ class OpenAILikeProvider(BaseModelProvider):
             if msg.image:
                 image_url = self._prepare_image(msg)
                 if image_url:
-                    json_message["content"].append(
-                        {"type": "image_url", "image_url": image_url}
-                    )
+                    json_message["content"].append({"type": "image_url", "image_url": image_url})
 
             messages.append(json_message)
 
@@ -58,6 +56,7 @@ class OpenAILikeProvider(BaseModelProvider):
         }
 
         from llmonkey.llms.openai import OpenAI_o1, OpenAI_o1_Mini
+
         if request.model_name in [OpenAI_o1.config.identifier, OpenAI_o1_Mini.config.identifier]:
             del payload["max_tokens"]
             del payload["temperature"]
@@ -68,6 +67,7 @@ class OpenAILikeProvider(BaseModelProvider):
                     message["role"] = "user"
 
         from llmonkey.llms.deepinfra import Deepinfra_Qwen_QwQ_32B
+
         if request.model_name == Deepinfra_Qwen_QwQ_32B.config.identifier:
             for message in messages:
                 # only roles user and assistant are allowed / there needs to be at least one user message (?)
@@ -77,9 +77,7 @@ class OpenAILikeProvider(BaseModelProvider):
         # Send the request to OpenAI API
         response_data = self._post(endpoint, payload)
         msg = response_data["choices"][0]["message"]
-        conversation = request.conversation + [
-            PromptMessage(role=msg["role"], content=msg["content"])
-        ]
+        conversation = request.conversation + [PromptMessage(role=msg["role"], content=msg["content"])]
         token_usage = TokenUsage(
             prompt_tokens=response_data["usage"]["prompt_tokens"],
             completion_tokens=response_data["usage"]["completion_tokens"],
@@ -99,10 +97,7 @@ class OpenAILikeProvider(BaseModelProvider):
         if isinstance(image, str):
             image_url = {"url": image}
         elif isinstance(image, bytes):
-            image_url = {
-                "url": "data:image/jpeg;base64,"
-                + base64.b64encode(image).decode("utf-8")
-            }
+            image_url = {"url": "data:image/jpeg;base64," + base64.b64encode(image).decode("utf-8")}
         else:
             raise ValueError(f"Image must be a URL or bytes, provided {type(image)}")
         return image_url
@@ -124,6 +119,9 @@ class OpenAILikeProvider(BaseModelProvider):
         endpoint = "models"
         response_data = self._get(endpoint)
         return response_data["data"]
+
+    def to_litellm(self):
+        return dict(api_key=self.api_key, api_base=self.base_url, prefix="openai")
 
 
 class OpenAIProvider(OpenAILikeProvider):

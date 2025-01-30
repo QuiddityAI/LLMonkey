@@ -45,9 +45,7 @@ class BaseModelProvider(ABC):
             response = requests.post(url, json=payload, headers=self.headers)
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            raise ValueError(
-                f"LLMonkey: Error {response.status_code}: {response.text}, URL: {url}"
-            )
+            raise ValueError(f"LLMonkey: Error {response.status_code}: {response.text}, URL: {url}")
         return response.json()
 
     def _get(self, endpoint: str) -> Dict[str, Any]:
@@ -93,9 +91,7 @@ class BaseModelProvider(ABC):
                 )  # Validate against Pydantic model
             except (json.JSONDecodeError, ValidationError, IndexError) as e:
                 if attempt == retries - 1:
-                    raise ValueError(
-                        f"Validation failed after {retries} attempts: {e}. str: {s}"
-                    )
+                    raise ValueError(f"Validation failed after {retries} attempts: {e}. str: {s}")
         raise ValueError(f"Failed after {retries} retries, last str: {s}")
 
     def generate_structured_array_response(
@@ -132,9 +128,7 @@ class BaseModelProvider(ABC):
             except Exception as e:
                 if attempt == retries - 1:
                     logging.error(f"Failed to parse JSON: {e}")
-                    raise ValueError(
-                        f"Validation failed after {retries} attempts: {e}. str: {s}"
-                    )
+                    raise ValueError(f"Validation failed after {retries} attempts: {e}. str: {s}")
         raise ValueError(f"Failed after {retries} retries, last str: {s}")
 
     @abstractmethod
@@ -167,3 +161,10 @@ class BaseModelProvider(ABC):
         Derived classes must implement this.
         """
         pass
+
+    def to_litellm(self) -> dict:
+        """
+        Convert the provider to a config compatible with Litellm.
+        Must return "prefix" as a key in the dictionary to be used Litellm prefix
+        """
+        raise NotImplementedError("This provider does not support Litellm conversion.")

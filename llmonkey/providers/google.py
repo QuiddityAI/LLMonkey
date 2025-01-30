@@ -16,12 +16,14 @@ from ..models import (
 )
 from .base import BaseModelProvider
 
+VERTEX_PROJECT_ID = "visual-data-map"
+VERTEX_LOCATION = "europe-west3"
+
 
 class GoogleProvider(BaseModelProvider):
     def __init__(self, api_key: str):
         # note: the api_key is not used for the Google provider, instead an ADC (Application Default Credentials) is used
-        PROJECT_ID = "visual-data-map"
-        vertexai.init(project=PROJECT_ID, location="europe-west3")
+        vertexai.init(project=VERTEX_PROJECT_ID, location=VERTEX_LOCATION)
         super().__init__(api_key, None)
 
     def generate_prompt_response(self, request: ChatRequest) -> ChatResponse:
@@ -62,10 +64,7 @@ class GoogleProvider(BaseModelProvider):
         try:
             response = model.generate_content(
                 contents,
-                generation_config={
-                    "temperature": request.temperature,
-                    "max_output_tokens": request.max_tokens
-                    },
+                generation_config={"temperature": request.temperature, "max_output_tokens": request.max_tokens},
                 safety_settings={
                     HarmCategory.HARM_CATEGORY_CIVIC_INTEGRITY: HarmBlockThreshold.OFF,
                     HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.OFF,
@@ -78,9 +77,7 @@ class GoogleProvider(BaseModelProvider):
             logging.error(f"ResourceExhausted: {e}, waiting 10 seconds")
             raise RateLimitException("ResourceExhausted", 10)
 
-        conversation = request.conversation + [
-            PromptMessage(role="assistant", content=response.text)
-        ]
+        conversation = request.conversation + [PromptMessage(role="assistant", content=response.text)]
         token_usage = TokenUsage(
             prompt_tokens=response.usage_metadata.prompt_token_count,
             completion_tokens=response.usage_metadata.candidates_token_count,
@@ -95,3 +92,7 @@ class GoogleProvider(BaseModelProvider):
 
     def generate_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
         raise NotImplementedError("Embedding generation is not implemented for Google models.")
+
+    def to_litellm(self):
+        conf = dict(vertex_project=VERTEX_PROJECT_ID, vertex_location=VERTEX_LOCATION, prefix="vertex_ai")
+        return conf

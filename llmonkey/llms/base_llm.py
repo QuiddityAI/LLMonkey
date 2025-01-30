@@ -17,6 +17,7 @@ from ..models import (
 )
 from ..providers import providers
 from ..providers.base import BaseModelProvider
+from ..providers.openai_like import OpenAILikeProvider
 from ..recipes.llm_mixins import ConvenienceLLMMixin
 
 T = TypeVar("BaseModelAlias")
@@ -32,9 +33,7 @@ def count_tokens_rough(text):
 
 class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
     def __init__(self, api_key: str = ""):
-        self.provider_instance: BaseModelProvider = providers[
-            self.provider
-        ].implementation(api_key=api_key)
+        self.provider_instance: BaseModelProvider = providers[self.provider].implementation(api_key=api_key)
 
     @classmethod
     def _get_subclasses(cls):
@@ -127,9 +126,7 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
         if system_prompt:
             conversation.append(PromptMessage(role="system", content=system_prompt))
         if user_prompt:
-            conversation.append(
-                PromptMessage(role="user", content=user_prompt, image=image)
-            )
+            conversation.append(PromptMessage(role="user", content=user_prompt, image=image))
         self._validate_input(conversation)
         chat_request = ChatRequest(
             model_provider=provider,
@@ -138,9 +135,7 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
             temperature=temperature,
             max_tokens=max_tokens,
         )
-        data_instance, resp = self.provider_instance.generate_structured_response(
-            chat_request, data_model=data_model
-        )
+        data_instance, resp = self.provider_instance.generate_structured_response(chat_request, data_model=data_model)
         resp.token_usage.total_cost = self._calculate_cost(resp.token_usage)
         return data_instance, resp
 
@@ -175,9 +170,7 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
         if system_prompt:
             conversation.append(PromptMessage(role="system", content=system_prompt))
         if user_prompt:
-            conversation.append(
-                PromptMessage(role="user", content=user_prompt, image=image)
-            )
+            conversation.append(PromptMessage(role="user", content=user_prompt, image=image))
         self._validate_input(conversation)
         chat_request = ChatRequest(
             model_provider=provider,
@@ -189,9 +182,7 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
         (
             data_instance_array,
             resp,
-        ) = self.provider_instance.generate_structured_array_response(
-            chat_request, data_model=data_model
-        )
+        ) = self.provider_instance.generate_structured_array_response(chat_request, data_model=data_model)
         resp.token_usage.total_cost = self._calculate_cost(resp.token_usage)
         if as_dicts:
             return [data.model_dump() for data in data_instance_array], resp
@@ -209,29 +200,18 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
         """
         cost = 0.0
         if token_usage.prompt_tokens and token_usage.completion_tokens:
-            cost += (
-                token_usage.prompt_tokens / 1e6 * self.config.euro_per_1M_input_tokens
-            )
-            cost += (
-                token_usage.completion_tokens
-                / 1e6
-                * self.config.euro_per_1M_output_tokens
-            )
+            cost += token_usage.prompt_tokens / 1e6 * self.config.euro_per_1M_input_tokens
+            cost += token_usage.completion_tokens / 1e6 * self.config.euro_per_1M_output_tokens
             return cost
         if token_usage.total_tokens:
-            av_price = (
-                self.config.euro_per_1M_input_tokens
-                + self.config.euro_per_1M_output_tokens
-            ) / 2
+            av_price = (self.config.euro_per_1M_input_tokens + self.config.euro_per_1M_output_tokens) / 2
             cost += token_usage.total_tokens / 1e6 * av_price
         return None
 
     def _validate_input(self, conversation: List[PromptMessage]) -> None:
         total_tokens = sum([count_tokens_rough(msg.content) for msg in conversation])
         if total_tokens > self.config.max_input_tokens:
-            raise ValueError(
-                f"Input tokens exceed the maximum limit of {self.config.max_input_tokens}."
-            )
+            raise ValueError(f"Input tokens exceed the maximum limit of {self.config.max_input_tokens}.")
 
     def generate_prompt_response(
         self,
@@ -261,9 +241,7 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
         if system_prompt:
             conversation.append(PromptMessage(role="system", content=system_prompt))
         if user_prompt:
-            conversation.append(
-                PromptMessage(role="user", content=user_prompt, image=image)
-            )
+            conversation.append(PromptMessage(role="user", content=user_prompt, image=image))
         self._validate_input(conversation)
         chat_request = ChatRequest(
             model_provider=provider,
@@ -362,9 +340,7 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
         model_name = self.config.identifier
         tokens = count_tokens_rough(text)
         if tokens > self.config.max_input_tokens:
-            raise ValueError(
-                f"Input tokens exceed the maximum limit of {self.config.max_input_tokens}."
-            )
+            raise ValueError(f"Input tokens exceed the maximum limit of {self.config.max_input_tokens}.")
         embedding_request = EmbeddingRequest(
             model_provider=provider,
             model_name=model_name,
@@ -373,3 +349,21 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
         resp = self.provider_instance.generate_embeddings(embedding_request)
         resp.token_usage.total_cost = self._calculate_cost(resp.token_usage)
         return resp
+
+    def to_litellm(self) -> dict:
+        """
+        Converts the provider configuration to a LiteLLM compatible format.
+        Returns:
+            dict: A dictionary containing the model, API key, and API base URL
+                  which can be directly passed to litellm and compatible functions
+            It can be used e.g. like that
+            ```
+            conf = llm_model.to_litellm()
+            completion(messages=[{ "content": "Hello, how are you?","role": "user"}], **conf)
+            ```
+        """
+
+        conf = self.provider_instance.to_litellm()
+        prefix = conf.pop("prefix")
+        litellm_conf = dict(model=f"{prefix}/{self.config.identifier}") | conf
+        return litellm_conf
