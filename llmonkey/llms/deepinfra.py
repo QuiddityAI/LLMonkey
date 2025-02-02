@@ -137,7 +137,7 @@ class Deepinfra_Meta_Llama_3_1_405B_Instruct(BaseLLMModel):
     provider = ModelProvider.deepinfra
 
 
-class Deepinfra_Qwen_QwQ_32B_Preview(BaseLLMModel):
+class Deepinfra_Qwen_QwQ_32B(BaseLLMModel):
     config = ModelConfig(
         identifier="Qwen/QwQ-32B-Preview",
         verbose_name="Deepinfra Qwen QwQ 32B Preview",
