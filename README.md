@@ -37,6 +37,15 @@ ChatResponse(provider_used=<ModelProvider.groq: 'groq'>, model_used='llama-3.2-3
 
 ```
 
+Besides that, each model provides following methods:
+- `generate_prompt_response`: generates a response to a single prompt
+- `generate_chat_response`: generates a response to a chat conversation
+- `generate_structured_response`: generates a response according to a provided Pydantic model
+- `generate_structured_array_response`: generates a response with an array of instances of provided Pydantic model
+- `rerank`: reranks a list of provided prompts
+- `to_litellm`: converts the model to litellm-compatible kwargs
+
+
 ### Converting to litellm
 
 Each model can be converted to litellm by generating corresponding litellm kwargs with method `.to_litellm`.
@@ -73,6 +82,103 @@ from llmonkey.llms import BaseModel
 model = BaseModel.load("OpenAI_GPT4o_Mini")
 ```
 to load a model by name.
+
+<details>
+<summary> Currently supported models </summary>
+
+```
+ 'GroqLlama3_3_70bVersatile',
+ 'GroqLlama3_1_70bVersatile',
+ 'GroqLlama3_1_8bInstant',
+ 'GroqLlama3_70BToolUsePreview',
+ 'GroqLlama3_8BToolUsePreview',
+ 'GroqLlamaGuard38B',
+ 'GroqLlama3_2_1BPreview',
+ 'GroqLlama3_2_3BPreview',
+ 'GroqLlama3_2_11BVisionPreview',
+ 'GroqLlama3_2_90BPreview',
+ 'GroqLlama3_70B8k',
+ 'GroqLlama3_8B8k',
+ 'GroqMixtral8x7B',
+ 'GroqGemma7B8kInstruct',
+ 'GroqGemma2_9B8k',
+ 'Mistral_Ministral3b',
+ 'Mistral_Ministral8b',
+ 'Mistral_Mistral_Large',
+ 'Mistral_Mistral_Small',
+ 'Mistral_Mistral_Embed',
+ 'Mistral_Mistral_Nemo',
+ 'Mistral_Codestral',
+ 'Mistral_Pixtral',
+ 'Mistral_Pixtral_Large',
+ 'Nebius_Llama_3_3_70B_fast',
+ 'Nebius_Llama_3_3_70B',
+ 'Nebius_Llama_3_1_70B_fast',
+ 'Nebius_Llama_3_1_70B_cheap',
+ 'Nebius_Llama_3_1_8B_fast',
+ 'Nebius_Llama_3_1_8B_cheap',
+ 'Nebius_Llama_3_2_1B',
+ 'Nebius_Llama_3_2_3B',
+ 'Nebius_Llama_3_1_405B_cheap',
+ 'Nebius_Mistral_Nemo_Instruct_2407_fast',
+ 'Nebius_Mistral_Nemo_Instruct_2407_cheap',
+ 'Nebius_Mixtral_8x7B_Instruct_v0_1_fast',
+ 'Nebius_Mixtral_8x7B_Instruct_v0_1_cheap',
+ 'Nebius_Mixtral_8x22B_Instruct_v0_1_fast',
+ 'Nebius_Mixtral_8x22B_Instruct_v0_1_cheap',
+ 'Nebius_Qwen2_5_Coder_7B_fast',
+ 'Nebius_Qwen2_5_Coder_7B_cheap',
+ 'Nebius_Qwen2_5_Coder_7B_Instruct_fast',
+ 'Nebius_Qwen2_5_Coder_7B_Instruct_cheap',
+ 'Nebius_DeepSeek_Coder_V2_Lite_Instruct_fast',
+ 'Nebius_DeepSeek_Coder_V2_Lite_Instruct_cheap',
+ 'Nebius_Phi_3_mini_4k_instruct_fast',
+ 'Nebius_Phi_3_mini_4k_instruct_cheap',
+ 'Nebius_Phi_3_medium_128k_instruct_fast',
+ 'Nebius_Phi_3_medium_128k_instruct_cheap',
+ 'Nebius_OLMo_7B_Instruct',
+ 'Nebius_Gemma_2_9b_it_fast',
+ 'Nebius_Gemma_2_9b_it_cheap',
+ 'Nebius_Llama3_OpenBioLLM_8B',
+ 'Nebius_Llama3_OpenBioLLM_70B',
+ 'OpenAI_GPT4o',
+ 'OpenAI_GPT4o_Mini',
+ 'OpenAI_o1',
+ 'OpenAI_o1_Mini',
+ 'OpenAI_TextEmbedding_3_small',
+ 'OpenAI_TextEmbedding_3_large',
+ 'OpenAI_Ada_v2',
+ 'Google_Gemini_Flash_1_5_v1',
+ 'Google_Gemini_Flash_1_5_v2',
+ 'Google_Gemini_Flash_1_5',
+ 'Google_Gemini_Flash_1_5_8B',
+ 'Google_Gemini_Flash_2_0_Exp',
+ 'Google_Gemini_Flash_2_0_Thinking_Exp',
+ 'Google_Gemini_Pro_1_5',
+ 'Ionos_Llama_3_1_405B',
+ 'Deepinfra_DeepSeek_R1',
+ 'Deepinfra_DeepSeek_R1_Distill_Llama_70B',
+ 'Deepinfra_DeepSeek_V3',
+ 'Deepinfra_Llama_3_3_70B_Instruct_Turbo',
+ 'Deepinfra_Llama_3_3_70B_Instruct',
+ 'Deepinfra_phi_4',
+ 'Deepinfra_Meta_Llama_3_1_70B_Instruct',
+ 'Deepinfra_Meta_Llama_3_1_8B_Instruct',
+ 'Deepinfra_Meta_Llama_3_1_405B_Instruct',
+ 'Deepinfra_Qwen_QwQ_32B',
+ 'Deepinfra_Meta_Llama_3_1_8B_Instruct_Turbo',
+ 'Deepinfra_Meta_Llama_3_1_70B_Instruct_Turbo',
+ 'Deepinfra_Qwen2_5_Coder_32B_Instruct',
+ 'Deepinfra_Llama_3_1_Nemotron_70B_Instruct',
+ 'Deepinfra_Qwen2_5_72B_Instruct',
+ 'Deepinfra_Llama_3_2_90B_Vision_Instruct',
+ 'Deepinfra_Llama_3_2_11B_Vision_Instruct',
+ 'Deepinfra_Llama_3_2_1B_Instruct',
+ 'Deepinfra_Llama_3_2_3B_Instruct',
+ 'Azure_GPT4o'
+ ```
+
+</details>
 
 ### Vision capabilities
 
