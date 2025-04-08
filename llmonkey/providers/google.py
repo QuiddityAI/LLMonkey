@@ -18,7 +18,7 @@ from ..models import (
 from .base import BaseModelProvider
 
 VERTEX_PROJECT_ID = os.environ.get("LLMONKEY_GOOGLE_PROJECT_ID")
-VERTEX_LOCATION = os.environ.get("LLMONKEY_GOOGLE_LOCATION, "europe-west3")
+VERTEX_LOCATION = os.environ.get("LLMONKEY_GOOGLE_LOCATION", "europe-west3")
 
 
 class GoogleProvider(BaseModelProvider):
