@@ -1,6 +1,6 @@
 [project]
 name = "llmonkey"
-version = "1.0.0"
+version = "1.0.1"
 description="A library to talk to different language models"
 authors = [
   { name = "Andrii Trelin", email = "andrii@absclust.com" },
