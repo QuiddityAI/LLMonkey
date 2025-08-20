@@ -37,7 +37,12 @@ class BaseLLMModel(ConvenienceLLMMixin, metaclass=ABCMeta):
 
     @classmethod
     def _get_subclasses(cls):
-        return cls.__subclasses__()
+        """Return all subclasses (direct + indirect) of this class."""
+        subclasses = []
+        for subclass in cls.__subclasses__():
+            subclasses.append(subclass)
+            subclasses.extend(subclass._get_subclasses())
+        return subclasses
 
     @classmethod
     def _build_models_dict(cls):
